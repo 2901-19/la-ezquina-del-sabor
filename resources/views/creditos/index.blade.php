@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaCreditos', '{{ route("creditos.data") }}', [
         {data:'cliente.nombre',name:'cliente_id'},
         {data:'monto_total_usd',name:'monto_total_usd'},{data:'saldo_pendiente_usd',name:'saldo_pendiente_usd'},
-        {data:'estado',name:'estado'},{data:'fecha_emision',name:'fecha_emision'},
+        {data:'estado',name:'estado'},{data:'fecha_emision',name:'fecha_emision',render:function(d){return formatDate(d);}},
         {data:'acciones',name:'acciones',orderable:false,searchable:false}
     ]);
 });

@@ -96,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaUsuarios', '{{ route("sistema.usuarios.data") }}', [
         {data:'nombre_completo',name:'nombre_completo'},
         {data:'rol.nombre',name:'rol_id'},{data:'activo',name:'activo'},
-        {data:'created_at',name:'created_at'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ]);
+        {data:'created_at',name:'created_at',render:function(d){return formatDate(d);}},{data:'acciones',name:'acciones',orderable:false,searchable:false}
+    ], { '#fRol': 1, '#fEstado': 2 });
 });
 </script>
 @endpush

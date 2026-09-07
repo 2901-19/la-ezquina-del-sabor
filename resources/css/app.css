@@ -530,7 +530,17 @@ div.dt-container div.dt-info {
   padding: 6px 14px;
   font-family: var(--font-mono);
 }
-div.dt-container div.dt-processing { display: none !important; }
+div.dt-container div.dt-processing {
+  position: absolute; inset: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in oklab, var(--bg) 70%, transparent);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(2px);
+  width: auto; margin: 0; top: 0; left: 0;
+}
+div.dt-container div.dt-processing > div:last-child > div {
+  background: var(--accent) !important;
+}
 div.dt-container div.dt-paging {
   display: flex; align-items: center; justify-content: flex-end; gap: 3px;
   padding: 6px 14px;
@@ -594,7 +604,22 @@ table.dataTable thead th.sorting { cursor: default; }
 .search-box .label { font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; margin-right: 6px; }
 .search-box .input-brand { padding-left: 13px; }
 .filter-selects { display: flex; gap: 10px; flex-wrap: wrap; }
-.filter-selects .select-brand { width: auto; min-width: 150px; }
+.filter-selects .select-brand {
+  width: auto; min-width: 150px;
+  appearance: none;
+  background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8l3.5-3.5' fill='none' stroke='%237a7066' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center / 12px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 8px 32px 8px 12px;
+  font-size: 13px; font-weight: 500; color: var(--fg-2);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+}
+.filter-selects .select-brand:hover { border-color: var(--fg-2); }
+.filter-selects .select-brand:focus {
+  outline: none; border-color: var(--accent); box-shadow: var(--focus-ring);
+}
 .filter-count { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin-left: auto; white-space: nowrap; }
 .filter-count strong { color: var(--fg-2); font-weight: 600; }
 

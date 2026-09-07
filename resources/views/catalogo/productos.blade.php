@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {data:'tipo_precio',name:'tipo_precio'},{data:'precio_usd',name:'precio_usd'},
         {data:'precio_bs',name:'precio_bs'},{data:'activo',name:'activo'},
         {data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ], { '#filtroCat': 0, '#filtroEstado': 4 });
+    ], { '#filtroCat': 0, '#filtroEstado': 5 });
 });
 </script>
 @endpush

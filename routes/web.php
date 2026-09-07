@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/comandas', [ComandaController::class, 'index'])->name('comandas.index');
     Route::post('/comandas', [ComandaController::class, 'store'])->name('comandas.store');
     Route::get('/comandas/data', [ComandaController::class, 'data'])->name('comandas.data');
+    Route::get('/comandas/{comanda}/show', [ComandaController::class, 'show'])->name('comandas.show');
     Route::get('/cocina', [ComandaController::class, 'cocina'])->name('cocina.index');
 
     Route::get('/creditos', [CreditoController::class, 'index'])->name('creditos.index');

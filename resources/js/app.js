@@ -1,4 +1,4 @@
-import 'bootstrap';
+import * as bootstrap from 'bootstrap';
 import jQuery from 'jquery';
 import 'datatables.net';
 import 'datatables.net-bs5';
@@ -16,7 +16,7 @@ function showToast(msg, tipo) {
 }
 window.showToast = showToast;
 
-function openModal(modalId) { new bootstrap.Modal(document.getElementById(modalId)).show(); }
+function openModal(modalId) { bootstrap.Modal.getOrCreateInstance(document.getElementById(modalId)).show(); }
 window.openModal = openModal;
 
 function closeModal(modalId) { var m = bootstrap.Modal.getInstance(document.getElementById(modalId)); if(m) m.hide(); }
@@ -116,6 +116,20 @@ function initDate() {
     var el = document.getElementById('todayDate');
     if (el) el.textContent = new Date().toLocaleDateString('es-VE',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
+
+function formatDate(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    var Y = d.getFullYear();
+    var M = String(d.getMonth() + 1).padStart(2, '0');
+    var D = String(d.getDate()).padStart(2, '0');
+    var h = d.getHours();
+    var ampm = h >= 12 ? 'pm' : 'am';
+    var h12 = h % 12 || 12;
+    var m = String(d.getMinutes()).padStart(2, '0');
+    return Y + '-' + M + '-' + D + ' | ' + h12 + ':' + m + ampm;
+}
+window.formatDate = formatDate;
 
 function toggleSidebar() {
     var sidebar = document.querySelector('.sidebar');
@@ -336,5 +350,89 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(function() { showToast('Error al cargar datos', 'error'); });
             return;
         }
+
+        var verBtn = e.target.closest('[data-act="ver"]');
+        if (verBtn) {
+            e.preventDefault();
+            var verId = verBtn.getAttribute('data-id');
+            var verUrl = '/comandas/' + verId + '/show';
+            fetch(verUrl, { credentials: 'same-origin', headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(r) { return r.json(); })
+            .then(function(c) {
+                renderComanda(c);
+                openModal('modalVerComanda');
+            })
+            .catch(function(e) { console.error('Error show comanda:', e); showToast('Error al cargar comanda', 'error'); });
+            return;
+        }
     });
 });
+
+function renderComanda(c) {
+    var num = String(c.numero_correlativo_diario).padStart(3, '0');
+    var estadoMap = { montar: { label: 'Montar', cls: 'bg-info' }, entrega: { label: 'Entrega', cls: 'bg-primary' }, cobrar: { label: 'Cobrar', cls: 'bg-warning text-dark' }, cerrada: { label: 'Cerrada', cls: 'bg-secondary' } };
+    var est = estadoMap[c.estado_comanda] || { label: c.estado_comanda, cls: 'bg-secondary' };
+    var cliente = (c.cliente && c.cliente.nombre) ? c.cliente.nombre : (c.nombre_cliente_temporal || 'Sin cliente');
+    var telefono = (c.cliente && c.cliente.telefono) ? c.cliente.telefono : (c.telefono_delivery || '—');
+    var usuario = c.usuario ? c.usuario.nombre_completo : '—';
+    var rol = (c.usuario && c.usuario.rol) ? c.usuario.rol.nombre : '';
+    var notas = c.notas_generales || '';
+
+    var items = '';
+    if (c.comandaDetalles && c.comandaDetalles.length) {
+        c.comandaDetalles.forEach(function(d, i) {
+            var sub = (d.cantidad * d.precio_unitario_usd).toFixed(2);
+            var tipoMap = { comer_aqui: 'Aquí', llevar: 'Llevar', delivery: 'Delivery' };
+            var tipo = tipoMap[d.tipo_entrega] || d.tipo_entrega;
+            var note = d.nota_producto ? '<br><small class="text-muted fst-italic">' + d.nota_producto + '</small>' : '';
+            items += '<tr><td>' + (i + 1) + '</td><td>' + (d.producto ? d.producto.nombre : '—') + note + '</td><td class="text-center">' + d.cantidad + '</td><td class="text-end font-monospace">$' + Number(d.precio_unitario_usd).toFixed(2) + '</td><td class="text-end font-monospace">$' + sub + '</td><td><span class="badge bg-light text-dark">' + tipo + '</span></td></tr>';
+        });
+    } else {
+        items = '<tr><td colspan="6" class="text-center text-muted py-3">Sin productos</td></tr>';
+    }
+
+    var html = '';
+    html += '<div class="mb-3 pb-3 border-bottom">';
+    html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-info-circle"></i> Información General</h6>';
+    html += '<div class="row g-3">';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Número</div><div class="fw-bold" style="font-size:18px">#' + num + '</div></div>';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Estado</div><div><span class="badge ' + est.cls + '">' + est.label + '</span></div></div>';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Fecha</div><div class="fw-bold font-monospace">' + formatDate(c.fecha_creacion) + '</div></div>';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Tasa BCV</div><div class="fw-bold font-monospace">' + Number(c.tasa_bcv_aplicada).toFixed(2) + '</div></div>';
+    html += '</div></div>';
+
+    html += '<div class="mb-3 pb-3 border-bottom">';
+    html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-person"></i> Cliente</h6>';
+    html += '<div class="row g-3">';
+    html += '<div class="col-md-4"><div class="text-muted" style="font-size:12px">Nombre</div><div class="fw-bold">' + cliente + '</div></div>';
+    html += '<div class="col-md-4"><div class="text-muted" style="font-size:12px">Teléfono</div><div class="font-monospace">' + telefono + '</div></div>';
+    html += '</div></div>';
+
+    html += '<div class="mb-3 pb-3 border-bottom">';
+    html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-person-badge"></i> Atendido por</h6>';
+    html += '<div class="row g-3">';
+    html += '<div class="col-md-4"><div class="text-muted" style="font-size:12px">Usuario</div><div class="fw-bold">' + usuario + (rol ? ' <span class="text-muted">(' + rol + ')</span>' : '') + '</div></div>';
+    html += '</div></div>';
+
+    html += '<div class="mb-3 pb-3 border-bottom">';
+    html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-bag"></i> Productos</h6>';
+    html += '<div class="table-responsive"><table class="table table-sm align-middle mb-0">';
+    html += '<thead><tr class="table-light"><th>#</th><th>Producto</th><th class="text-center">Cant</th><th class="text-end">P. Unit</th><th class="text-end">Subtotal</th><th>Tipo</th></tr></thead>';
+    html += '<tbody>' + items + '</tbody></table></div></div>';
+
+    if (notas) {
+        html += '<div class="mb-3 pb-3 border-bottom">';
+        html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-chat-left-text"></i> Notas</h6>';
+        html += '<p class="mb-0" style="font-size:14px">' + notas + '</p></div>';
+    }
+
+    html += '<div class="mt-2">';
+    html += '<h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size:11px;letter-spacing:.08em"><i class="bi bi-calculator"></i> Totales</h6>';
+    html += '<div class="row g-3">';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Total USD</div><div class="fw-bold" style="font-size:20px;color:var(--accent)">$' + Number(c.total_usd).toFixed(2) + '</div></div>';
+    html += '<div class="col-md-3"><div class="text-muted" style="font-size:12px">Total Bs</div><div class="fw-bold font-monospace" style="font-size:20px">Bs ' + Number(c.total_ve).toLocaleString('es-VE', { minimumFractionDigits: 2 }) + '</div></div>';
+    html += '</div></div>';
+
+    document.getElementById('verComandaTitle').textContent = 'Comanda #' + num + ' · ' + est.label;
+    document.getElementById('verComandaBody').innerHTML = html;
+}
