@@ -1,38 +1,36 @@
-# Windows
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+.prettierrc
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
-# Editor / OS
 .DS_Store
-.vscode/
-.idea/
-
-# Logs / temp
-*.log
-*.tmp
+cookies*.txt
+test_cookies*.txt
 
 # impeccable-ignore-start
-# Ephemeral output, runtime state, and per-dev overrides.
-# Unanchored: .impeccable may sit at the repo root or under a nested
-# workspace (apps/web/.impeccable/...); anchored patterns would miss it.
-# Shared artifacts stay tracked: config.json, live/config.json,
-# design.json, surfaces/*.md, critique/*.md.
 .impeccable/config.local.json
 .impeccable/hook.cache.json
 .impeccable/hook.pending.json
 .impeccable/*.png
 .impeccable/review/
 .impeccable/questions/
-.impeccable/live/server.json
-.impeccable/live/sessions/
-.impeccable/live/previews/
-.impeccable/live/annotations/
-.impeccable/live/cache/
-.impeccable/live/manual-edit-apply-transaction.json
-.impeccable/live/manual-edit-events.jsonl
-.impeccable/live/manual-edit-evidence/
-.impeccable/live/pending-manual-edits.json
-.impeccable/live/deferred-svelte-component-accepts.json
-.impeccable/live/*.png
+.impeccable/live/
 # impeccable-ignore-end
