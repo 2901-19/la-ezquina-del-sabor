@@ -18,12 +18,12 @@
         <input type="text" id="buscar" placeholder="Buscar comanda…" class="input-brand" aria-label="Buscar comanda" />
     </div>
     <div class="filter-selects">
-        <select class="select-brand" aria-label="Filtrar por estado">
+        <select class="select-brand" id="filtroEstado" aria-label="Filtrar por estado">
             <option value="">Todos los estados</option>
-            <option>Montar</option>
-            <option>Entrega</option>
-            <option>Cobrar</option>
-            <option>Cerrada</option>
+            <option value="montar">Montar</option>
+            <option value="entrega">Entrega</option>
+            <option value="cobrar">Cobrar</option>
+            <option value="cerrada">Cerrada</option>
         </select>
     </div>
 </div>
@@ -77,6 +77,21 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalVerComanda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content modal-surface">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title" id="verComandaTitle">Comanda #000</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="verComandaBody"></div>
+            <div class="modal-footer modal-footer-brand">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @push('scripts')
 <script>
@@ -85,8 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
         {data:'numero_correlativo_diario',name:'numero_correlativo_diario'},
         {data:'cliente.nombre',name:'cliente_id'},{data:'estado_comanda',name:'estado_comanda'},
         {data:'total_usd',name:'total_usd'},{data:'total_ve',name:'total_ve'},
-        {data:'fecha_creacion',name:'fecha_creacion'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ]);
+        {data:'fecha_creacion',name:'fecha_creacion',render:function(d){return formatDate(d);}},{data:'acciones',name:'acciones',orderable:false,searchable:false}
+    ], {
+        '#filtroEstado': 2
+    });
 });
 </script>
 @endpush

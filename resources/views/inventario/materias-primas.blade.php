@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {data:'nombre',name:'nombre'},{data:'unidad_medida',name:'unidad_medida'},
         {data:'stock_actual',name:'stock_actual'},{data:'stock_minimo',name:'stock_minimo'},
         {data:'costo_unitario_usd',name:'costo_unitario_usd'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ], { '#filtroStock': 1 });
+    ], { '#filtroStock': 2 });
 });
 </script>
 @endpush

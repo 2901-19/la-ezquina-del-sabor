@@ -14,9 +14,15 @@ class ComandaController extends Controller
 
     public function data(Request $request)
     {
-        $comandas = Comanda::with('cliente', 'usuario');
+        $comandas = Comanda::with('cliente')
+            ->select('id', 'numero_correlativo_diario', 'cliente_id', 'estado_comanda', 'total_usd', 'total_ve', 'fecha_creacion');
 
         return datatables()->eloquent($comandas)
+            ->filterColumn('cliente_id', function ($query, $keyword) {
+                $query->whereHas('cliente', function ($q) use ($keyword) {
+                    $q->where('nombre', 'ilike', "%{$keyword}%");
+                });
+            })
             ->addColumn('acciones', function ($comanda) {
                 return '<div class="row-actions">
                     <button class="icon-btn" data-act="ver" data-id="'.$comanda->id.'" title="Ver"><i class="bi bi-eye"></i></button>
@@ -24,6 +30,17 @@ class ComandaController extends Controller
             })
             ->rawColumns(['acciones'])
             ->make(true);
+    }
+
+    public function show(Comanda $comanda)
+    {
+        $comanda->load([
+            'cliente',
+            'usuario.rol',
+            'comandaDetalles.producto',
+        ]);
+
+        return response()->json($comanda);
     }
 
     public function store(Request $request)
