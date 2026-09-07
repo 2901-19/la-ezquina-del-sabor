@@ -538,7 +538,7 @@ div.dt-container div.dt-paging {
 div.dt-container div.dt-paging ul.pagination {
   margin: 0; gap: 3px;
 }
-div.dt-container div.dt-paging ul.pagination li.page-item a.page-link {
+div.dt-container div.dt-paging ul.pagination li.page-item .page-link {
   border: 1px solid var(--border-strong) !important; background: var(--surface) !important;
   color: var(--fg-2) !important; min-width: 28px; height: 28px; padding: 0 8px !important;
   border-radius: 8px !important; font-size: 12px; font-weight: 600;
@@ -547,18 +547,18 @@ div.dt-container div.dt-paging ul.pagination li.page-item a.page-link {
   text-decoration: none !important; cursor: pointer;
   line-height: 1;
 }
-div.dt-container div.dt-paging ul.pagination li.page-item a.page-link:hover {
+div.dt-container div.dt-paging ul.pagination li.page-item .page-link:hover {
   border-color: var(--fg-2) !important; color: var(--fg) !important;
   background: var(--surface-sunken) !important;
 }
-div.dt-container div.dt-paging ul.pagination li.page-item.active a.page-link {
+div.dt-container div.dt-paging ul.pagination li.page-item.active .page-link {
   background: var(--accent) !important; border-color: var(--accent) !important;
   color: var(--surface) !important;
 }
-div.dt-container div.dt-paging ul.pagination li.page-item.disabled a.page-link {
+div.dt-container div.dt-paging ul.pagination li.page-item.disabled .page-link {
   opacity: 0.4; cursor: not-allowed; pointer-events: none;
 }
-div.dt-container div.dt-paging ul.pagination li.page-item a.page-link:focus {
+div.dt-container div.dt-paging ul.pagination li.page-item .page-link:focus {
   outline: none; box-shadow: var(--focus-ring);
 }
 table.dataTable.no-footer { border-bottom: 0 !important; }
@@ -660,12 +660,12 @@ table.dataTable thead th.sorting { cursor: default; }
   .topbar { padding: 0 14px; }
 }
 @media (max-width: 767.98px) {
-  .dataTables_wrapper .dataTables_length,
-  .dataTables_wrapper .dataTables_filter {
+  div.dt-container div.dt-length,
+  div.dt-container div.dt-search {
     justify-content: space-between;
   }
-  .dataTables_wrapper .dataTables_filter { text-align: left; }
-  .dataTables_wrapper .dataTables_paginate { justify-content: center; }
+  div.dt-container div.dt-search { text-align: left; }
+  div.dt-container div.dt-paging ul.pagination { justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
