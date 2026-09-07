@@ -18,7 +18,6 @@ class ComboController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Producto::where('es_combo', true)->with('categoria'))
-            ->addIndexColumn()
             ->addColumn('acciones', function ($combo) {
                 return '
                     <div class="row-actions">

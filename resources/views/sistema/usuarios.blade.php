@@ -14,19 +14,23 @@
     </div>
 </div>
 
-<div class="filter-bar">
-    <input type="text" id="buscarUsr" placeholder="Buscar usuario…" class="form-control" style="max-width: 300px;">
-    <select id="fRol" class="form-select" style="max-width: 160px;">
+<div class="filter-card">
+    <div class="search-box">
+        <input type="text" id="buscar" placeholder="Buscar usuario…" class="input-brand" aria-label="Buscar usuario" />
+    </div>
+    <div class="filter-selects">
+    <select id="fRol" class="select-brand" aria-label="Filtrar por rol">
         <option value="">Todos</option>
         <option value="Administrador">Administrador</option>
         <option value="Recepcionista">Recepcionista</option>
         <option value="Cocinero">Cocinero</option>
     </select>
-    <select id="fEstado" class="form-select" style="max-width: 140px;">
+    <select id="fEstado" class="select-brand" aria-label="Filtrar por estado">
         <option value="">Todos</option>
         <option value="1">Activos</option>
         <option value="0">Inactivos</option>
     </select>
+    </div>
 </div>
 
 <div class="table-panel">
@@ -90,8 +94,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaUsuarios', '{{ route("sistema.usuarios.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'nombre_completo',name:'nombre_completo'},
-        {data:'rol.nombre',name:'rol'},{data:'activo',name:'activo'},
+        {data:'nombre_completo',name:'nombre_completo'},
+        {data:'rol.nombre',name:'rol_id'},{data:'activo',name:'activo'},
         {data:'created_at',name:'created_at'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
     ]);
 });

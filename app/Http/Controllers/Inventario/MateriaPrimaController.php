@@ -19,7 +19,6 @@ class MateriaPrimaController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(MateriaPrima::query())
-            ->addIndexColumn()
             ->addColumn('acciones', function ($mp) {
                 return '
                     <div class="row-actions">

@@ -15,8 +15,7 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input type="text" placeholder="Buscar combo…" class="input-brand" aria-label="Buscar combo" />
+        <input type="text" id="buscar" placeholder="Buscar combo…" class="input-brand" aria-label="Buscar combo" />
     </div>
 </div>
 
@@ -79,7 +78,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaCombos', '{{ route("catalogo.combos.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},
         {data:'nombre',name:'nombre'},
         {data:'categoria.nombre',name:'categoria_id'},
         {data:'precio_usd',name:'precio_usd'},

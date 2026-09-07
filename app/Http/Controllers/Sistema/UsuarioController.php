@@ -18,7 +18,6 @@ class UsuarioController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Usuario::with('rol'))
-            ->addIndexColumn()
             ->addColumn('acciones', function ($usuario) {
                 return '
                     <div class="row-actions">

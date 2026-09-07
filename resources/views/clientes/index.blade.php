@@ -14,7 +14,6 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
         <input type="text" id="buscar" placeholder="Buscar por nombre o teléfono…" class="input-brand" aria-label="Buscar cliente" />
     </div>
 </div>
@@ -72,7 +71,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaClientes', '{{ route("clientes.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'nombre',name:'nombre'},{data:'telefono',name:'telefono'},
+        {data:'nombre',name:'nombre'},{data:'telefono',name:'telefono'},
         {data:'puntos_acumulados',name:'puntos_acumulados'},{data:'compras',name:'compras'},
         {data:'saldo',name:'saldo'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
     ]);

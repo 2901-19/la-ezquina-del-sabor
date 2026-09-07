@@ -17,7 +17,6 @@ class CreditoController extends Controller
         $creditos = Credito::with('cliente');
 
         return datatables()->eloquent($creditos)
-            ->addIndexColumn()
             ->addColumn('acciones', function ($credito) {
                 return '<div class="row-actions">
                     <button class="icon-btn" data-act="ver" data-id="'.$credito->id.'" title="Ver"><i class="bi bi-eye"></i></button>

@@ -14,7 +14,6 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
         <input type="text" id="buscar" placeholder="Buscar categoría…" class="input-brand" aria-label="Buscar categoría" />
     </div>
 </div>
@@ -67,7 +66,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaCategorias', '{{ route("catalogo.categorias.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'nombre',name:'nombre'},
+        {data:'nombre',name:'nombre'},
         {data:'activa',name:'activa'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
     ]);
 });

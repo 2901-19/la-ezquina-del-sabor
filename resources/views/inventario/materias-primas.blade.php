@@ -24,7 +24,6 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
         <input type="text" id="buscar" placeholder="Buscar materia prima…" class="input-brand" aria-label="Buscar materia prima" />
     </div>
     <div class="filter-selects">
@@ -206,10 +205,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaMaterias', '{{ route("inventario.materias-primas.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'nombre',name:'nombre'},{data:'unidad_medida',name:'unidad_medida'},
+        {data:'nombre',name:'nombre'},{data:'unidad_medida',name:'unidad_medida'},
         {data:'stock_actual',name:'stock_actual'},{data:'stock_minimo',name:'stock_minimo'},
         {data:'costo_unitario_usd',name:'costo_unitario_usd'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ], { '#filtroStock': 2 });
+    ], { '#filtroStock': 1 });
 });
 </script>
 @endpush

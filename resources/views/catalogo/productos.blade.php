@@ -15,7 +15,6 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
         <input type="text" id="buscar" placeholder="Buscar producto…" class="input-brand" aria-label="Buscar producto" />
     </div>
     <div class="filter-selects">
@@ -181,10 +180,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaProductos', '{{ route("catalogo.productos.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'nombre',name:'nombre'},{data:'categoria.nombre',name:'categoria_id'},
+        {data:'nombre',name:'nombre'},{data:'categoria.nombre',name:'categoria_id'},
         {data:'tipo_precio',name:'tipo_precio'},{data:'precio_usd',name:'precio_usd'},
-        {data:'activo',name:'activo'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
-    ], { '#filtroCat': 1, '#filtroEstado': 5 });
+        {data:'precio_bs',name:'precio_bs'},{data:'activo',name:'activo'},
+        {data:'acciones',name:'acciones',orderable:false,searchable:false}
+    ], { '#filtroCat': 0, '#filtroEstado': 4 });
 });
 </script>
 @endpush

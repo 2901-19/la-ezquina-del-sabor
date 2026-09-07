@@ -35,7 +35,6 @@ class MermaController extends Controller
                 ->where('tipo_movimiento', 'merma')
                 ->orderByDesc('fecha_movimiento')
         )
-            ->addIndexColumn()
             ->addColumn('materia_prima_nombre', function ($mov) {
                 return $mov->materiaPrima->nombre ?? '-';
             })

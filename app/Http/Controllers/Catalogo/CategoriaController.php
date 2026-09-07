@@ -18,7 +18,6 @@ class CategoriaController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Categoria::query())
-            ->addIndexColumn()
             ->addColumn('acciones', function ($categoria) {
                 return '
                     <div class="row-actions">

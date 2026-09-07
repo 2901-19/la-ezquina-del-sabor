@@ -15,8 +15,7 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
-        <input type="text" placeholder="Buscar comanda…" class="input-brand" aria-label="Buscar comanda" />
+        <input type="text" id="buscar" placeholder="Buscar comanda…" class="input-brand" aria-label="Buscar comanda" />
     </div>
     <div class="filter-selects">
         <select class="select-brand" aria-label="Filtrar por estado">
@@ -83,8 +82,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaComandas', '{{ route("comandas.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},{data:'numero_correlativo_diario',name:'numero_correlativo_diario'},
-        {data:'cliente.nombre',name:'cliente'},{data:'estado_comanda',name:'estado_comanda'},
+        {data:'numero_correlativo_diario',name:'numero_correlativo_diario'},
+        {data:'cliente.nombre',name:'cliente_id'},{data:'estado_comanda',name:'estado_comanda'},
         {data:'total_usd',name:'total_usd'},{data:'total_ve',name:'total_ve'},
         {data:'fecha_creacion',name:'fecha_creacion'},{data:'acciones',name:'acciones',orderable:false,searchable:false}
     ]);

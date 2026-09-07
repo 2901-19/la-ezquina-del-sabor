@@ -18,7 +18,6 @@ class RecetaController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Receta::withCount('recetaDetalles as ingredientes_count'))
-            ->addIndexColumn()
             ->addColumn('acciones', function ($receta) {
                 return '
                     <div class="row-actions">

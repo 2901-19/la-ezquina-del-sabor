@@ -52,7 +52,6 @@ class CompraController extends Controller
         return datatables()->eloquent(
             Compra::with('compraDetalles.materiaPrima')->orderByDesc('fecha_compra')
         )
-            ->addIndexColumn()
             ->addColumn('materia_prima', function ($compra) {
                 return $compra->compraDetalles->pluck('materiaPrima.nombre')->implode(', ');
             })

@@ -135,7 +135,7 @@ function initDataTable(tableId, url, columns, filters) {
     if (typeof $.fn.DataTable !== 'undefined' && $('#' + tableId).length > 0) {
         var table = $('#' + tableId).DataTable({
             processing: true, serverSide: true, ajax: url,
-            columns: columns, language: {
+            columns: columns, dom: '<"row mb-2"<"col-sm-6"l>>rt<"row dt-footer"<"col-sm-6"i><"col-sm-6 text-end"p>>', language: {
                 search: '', lengthMenu: 'Mostrar _MENU_ entradas',
                 info: 'Mostrando _START_ a _END_ de _TOTAL_',
                 infoEmpty: 'Sin resultados', infoFiltered: '(filtrado de _MAX_)',
@@ -147,7 +147,7 @@ function initDataTable(tableId, url, columns, filters) {
                 },
                 zeroRecords: 'Sin resultados', loadingRecords: 'Cargando...'
             },
-            responsive: true, pageLength: 15
+            responsive: true, pageLength: 10
         });
         if (filters && typeof filters === 'object') {
             Object.keys(filters).forEach(function(selector) {

@@ -19,7 +19,6 @@ class ClienteController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Cliente::query())
-            ->addIndexColumn()
             ->addColumn('compras', function ($cliente) {
                 return $cliente->comandas()->count();
             })

@@ -17,7 +17,6 @@ class ComandaController extends Controller
         $comandas = Comanda::with('cliente', 'usuario');
 
         return datatables()->eloquent($comandas)
-            ->addIndexColumn()
             ->addColumn('acciones', function ($comanda) {
                 return '<div class="row-actions">
                     <button class="icon-btn" data-act="ver" data-id="'.$comanda->id.'" title="Ver"><i class="bi bi-eye"></i></button>

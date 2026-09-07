@@ -14,7 +14,6 @@
 
 <div class="filter-card">
     <div class="search-box">
-        <i class="bi bi-search"></i>
         <input type="text" id="buscar" placeholder="Buscar receta o producto…" class="input-brand" aria-label="Buscar receta" />
     </div>
 </div>
@@ -74,7 +73,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaRecetas', '{{ route("catalogo.recetas.data") }}', [
-        {data:'DT_RowIndex',name:'',orderable:false,searchable:false},
         {data:'nombre',name:'nombre'},
         {data:'ingredientes_count',name:'ingredientes_count'},
         {data:'costo_total_usd',name:'costo_total_usd'},

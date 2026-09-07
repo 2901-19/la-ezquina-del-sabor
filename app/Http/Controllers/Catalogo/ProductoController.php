@@ -23,8 +23,12 @@ class ProductoController extends Controller
     {
         $productos = Producto::with('categoria', 'receta');
 
+        $tasaBcv = (float) \App\Models\Configuracion::obtener('tasa_bcv', 818);
+
         return datatables()->eloquent($productos)
-            ->addIndexColumn()
+            ->addColumn('precio_bs', function ($producto) use ($tasaBcv) {
+                return round($producto->precio_usd * $tasaBcv, 2);
+            })
             ->addColumn('acciones', function ($producto) {
                 return '
                     <div class="row-actions">
