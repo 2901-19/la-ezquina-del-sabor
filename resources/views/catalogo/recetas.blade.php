@@ -169,12 +169,14 @@ var MATERIAS_PRIMAS = @json($materiasPrimas->mapWithKeys(fn($mp) => [$mp->id => 
 var RECETAS_DISPONIBLES = @json($recetas->mapWithKeys(fn($r) => [$r->id => ['nombre' => $r->nombre, 'costo' => (float)$r->costo_total_usd]]));
 var indiceFila = 0;
 
-function agregarFila(materiaPrimaId, recetaBaseId, cantidad) {
+function agregarFila(materiaPrimaId, recetaBaseId, cantidad, detalleId) {
     indiceFila++;
     var tbody = document.getElementById('ingredientesBody');
     var tr = document.createElement('tr');
     tr.className = 'ingrediente-row';
     tr.setAttribute('data-index', indiceFila);
+
+    var hiddenId = detalleId ? '<input type="hidden" name="detalles[' + indiceFila + '][id]" value="' + detalleId + '">' : '';
 
     var optionsMp = '<option value="">Seleccionar…</option>';
     Object.keys(MATERIAS_PRIMAS).forEach(function(id) {
@@ -196,7 +198,7 @@ function agregarFila(materiaPrimaId, recetaBaseId, cantidad) {
     var cant = cantidad || 1;
 
     tr.innerHTML =
-        '<td>' +
+        '<td>' + hiddenId +
             '<select class="input-brand input-tipo" style="font-size:13px;padding:6px 8px;" onchange="cambiarTipo(this)">' +
                 '<option value="materia_prima"' + (tipoMp !== 'none' ? ' selected' : '') + '>Materia Prima</option>' +
                 '<option value="sub_receta"' + (tipoSr !== 'none' ? ' selected' : '') + '>Sub-receta</option>' +
@@ -294,7 +296,7 @@ function cargarDetalleReceta(record) {
 
     if (record.receta_detalles && record.receta_detalles.length) {
         record.receta_detalles.forEach(function(d) {
-            agregarFila(d.materia_prima_id, d.receta_base_id, d.cantidad_requerida);
+            agregarFila(d.materia_prima_id, d.receta_base_id, d.cantidad_requerida, d.id);
         });
     }
 

@@ -183,6 +183,91 @@ class RecetaCrudTest extends TestCase
         $this->assertDatabaseCount('receta_detalles', 3);
     }
 
+    public function test_update_preserva_ids_de_detalles_existentes(): void
+    {
+        $mp1 = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);
+        $mp2 = MateriaPrima::create(['nombre' => 'Pan', 'unidad_medida' => 'unidad', 'costo_unitario_usd' => 0.50]);
+
+        $receta = Receta::create(['nombre' => 'Hamburguesa']);
+        $d1 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15]);
+        $d2 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp2->id, 'cantidad_requerida' => 1]);
+
+        $response = $this->actingAs($this->user)->putJson("/catalogo/recetas/{$receta->id}", [
+            'nombre' => 'Hamburguesa',
+            'detalles' => [
+                ['id' => $d1->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.20],
+                ['id' => $d2->id, 'materia_prima_id' => $mp2->id, 'cantidad_requerida' => 1],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('receta_detalles', ['id' => $d1->id, 'cantidad_requerida' => 0.20]);
+        $this->assertDatabaseHas('receta_detalles', ['id' => $d2->id, 'cantidad_requerida' => 1]);
+        $this->assertDatabaseCount('receta_detalles', 2);
+    }
+
+    public function test_update_agrega_nuevos_detalles(): void
+    {
+        $mp1 = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);
+        $mp2 = MateriaPrima::create(['nombre' => 'Pan', 'unidad_medida' => 'unidad', 'costo_unitario_usd' => 0.50]);
+
+        $receta = Receta::create(['nombre' => 'Hamburguesa']);
+        $d1 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15]);
+
+        $response = $this->actingAs($this->user)->putJson("/catalogo/recetas/{$receta->id}", [
+            'nombre' => 'Hamburguesa',
+            'detalles' => [
+                ['id' => $d1->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15],
+                ['materia_prima_id' => $mp2->id, 'cantidad_requerida' => 1],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('receta_detalles', ['id' => $d1->id]);
+        $this->assertDatabaseCount('receta_detalles', 2);
+    }
+
+    public function test_update_quita_detalles_eliminados(): void
+    {
+        $mp1 = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);
+        $mp2 = MateriaPrima::create(['nombre' => 'Pan', 'unidad_medida' => 'unidad', 'costo_unitario_usd' => 0.50]);
+
+        $receta = Receta::create(['nombre' => 'Hamburguesa']);
+        $d1 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15]);
+        $d2 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp2->id, 'cantidad_requerida' => 1]);
+
+        $response = $this->actingAs($this->user)->putJson("/catalogo/recetas/{$receta->id}", [
+            'nombre' => 'Hamburguesa',
+            'detalles' => [
+                ['id' => $d1->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('receta_detalles', ['id' => $d1->id]);
+        $this->assertDatabaseMissing('receta_detalles', ['id' => $d2->id]);
+        $this->assertDatabaseCount('receta_detalles', 1);
+    }
+
+    public function test_update_modifica_cantidad_de_detalle_existente(): void
+    {
+        $mp1 = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);
+
+        $receta = Receta::create(['nombre' => 'Hamburguesa']);
+        $d1 = RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.15]);
+
+        $response = $this->actingAs($this->user)->putJson("/catalogo/recetas/{$receta->id}", [
+            'nombre' => 'Hamburguesa',
+            'detalles' => [
+                ['id' => $d1->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.30],
+            ],
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('receta_detalles', ['id' => $d1->id, 'materia_prima_id' => $mp1->id, 'cantidad_requerida' => 0.30]);
+        $this->assertDatabaseCount('receta_detalles', 1);
+    }
+
     public function test_eliminar_receta_cascades_detalles(): void
     {
         $mp = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);

@@ -19,6 +19,7 @@ class UpdateRecetaRequest extends FormRequest
             'nombre' => 'required|string|max:255|unique:recetas,nombre,'.$recetaId,
             'descripcion' => 'nullable|string|max:500',
             'detalles' => 'nullable|array|min:1',
+            'detalles.*.id' => 'nullable|integer|exists:receta_detalles,id',
             'detalles.*.materia_prima_id' => 'nullable|integer|exists:materias_primas,id',
             'detalles.*.receta_base_id' => 'nullable|integer|exists:recetas,id',
             'detalles.*.cantidad_requerida' => 'required|numeric|min:0.01',

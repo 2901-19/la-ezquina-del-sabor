@@ -81,8 +81,7 @@ class RecetaController extends Controller
         $receta = DB::transaction(function () use ($request, $receta) {
             $receta->update($request->validated());
 
-            $receta->recetaDetalles()->delete();
-            $this->syncDetalles($receta, $request->detalles ?? []);
+            $this->syncDetallesDiff($receta, $request->detalles ?? []);
             $receta->recalcularCosto();
 
             return $receta;
@@ -110,6 +109,42 @@ class RecetaController extends Controller
                 'receta_base_id' => $detalle['receta_base_id'] ?? null,
                 'cantidad_requerida' => $detalle['cantidad_requerida'],
             ]);
+        }
+    }
+
+    private function syncDetallesDiff(Receta $receta, array $detalles): void
+    {
+        $validIds = $receta->recetaDetalles()->pluck('id')->toArray();
+        $enviosIds = [];
+
+        foreach ($detalles as $detalle) {
+            $id = $detalle['id'] ?? null;
+
+            $data = [
+                'materia_prima_id' => $detalle['materia_prima_id'] ?? null,
+                'receta_base_id' => $detalle['receta_base_id'] ?? null,
+                'cantidad_requerida' => $detalle['cantidad_requerida'],
+            ];
+
+            if ($id && in_array($id, $validIds)) {
+                $receta->recetaDetalles()
+                    ->where('id', $id)
+                    ->update($data);
+
+                $enviosIds[] = $id;
+
+                continue;
+            }
+
+            $enviosIds[] = $receta->recetaDetalles()->create($data)->id;
+        }
+
+        if (! empty($enviosIds)) {
+            $receta->recetaDetalles()
+                ->whereNotIn('id', $enviosIds)
+                ->delete();
+        } else {
+            $receta->recetaDetalles()->delete();
         }
     }
 }
