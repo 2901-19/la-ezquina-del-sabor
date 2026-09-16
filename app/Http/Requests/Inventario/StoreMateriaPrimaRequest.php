@@ -8,7 +8,7 @@ class StoreMateriaPrimaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('permiso', 'editar_inventario');
     }
 
     public function rules(): array

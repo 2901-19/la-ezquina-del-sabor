@@ -28,8 +28,13 @@ class CreditoService
 
     public function getEstadoCredito(Credito $credito): string
     {
-        if ($credito->saldo_pendiente_usd <= 0) return 'pagado';
-        if ($credito->saldo_pendiente_usd < $credito->monto_total_usd) return 'parcial';
+        if ($credito->saldo_pendiente_usd <= 0) {
+            return 'pagado';
+        }
+        if ($credito->saldo_pendiente_usd < $credito->monto_total_usd) {
+            return 'parcial';
+        }
+
         return 'pendiente';
     }
 }

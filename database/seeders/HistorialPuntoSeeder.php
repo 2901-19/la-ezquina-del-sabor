@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Cliente;
 use App\Models\HistorialPunto;
+use Illuminate\Database\Seeder;
 
 class HistorialPuntoSeeder extends Seeder
 {
@@ -27,10 +27,10 @@ class HistorialPuntoSeeder extends Seeder
 
         foreach ($registros as $r) {
             HistorialPunto::create([
-                'cliente_id'       => $clientes[$r['cliente_idx']]->id,
-                'comanda_id'       => null,
+                'cliente_id' => $clientes[$r['cliente_idx']]->id,
+                'comanda_id' => null,
                 'puntos_variacion' => $r['puntos'],
-                'tipo_operacion'   => $r['tipo'],
+                'tipo_operacion' => $r['tipo'],
             ]);
         }
     }

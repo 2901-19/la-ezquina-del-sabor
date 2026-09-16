@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Comanda;
 use App\Models\Pago;
+use Illuminate\Database\Seeder;
 
 class PagoSeeder extends Seeder
 {
@@ -16,11 +16,11 @@ class PagoSeeder extends Seeder
         foreach ($cerradas as $comanda) {
             $metodo = $metodos[array_rand($metodos)];
             Pago::create([
-                'comanda_id'    => $comanda->id,
-                'metodo_pago'   => $metodo,
-                'monto_usd'     => $comanda->total_usd,
-                'monto_ve'      => $comanda->total_ve,
-                'fecha_pago'    => $comanda->fecha_creacion->copy()->addMinutes(rand(20, 90)),
+                'comanda_id' => $comanda->id,
+                'metodo_pago' => $metodo,
+                'monto_usd' => $comanda->total_usd,
+                'monto_ve' => $comanda->total_ve,
+                'fecha_pago' => $comanda->fecha_creacion->copy()->addMinutes(rand(20, 90)),
             ]);
         }
     }

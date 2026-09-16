@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogo\StoreProductoRequest;
 use App\Http\Requests\Catalogo\UpdateProductoRequest;
 use App\Models\Categoria;
+use App\Models\Configuracion;
 use App\Models\Producto;
 use App\Models\Receta;
+use App\Services\PrecioService;
+use App\Services\TasaBcvService;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -16,6 +19,7 @@ class ProductoController extends Controller
     {
         $categorias = Categoria::where('activa', true)->orderBy('nombre')->get();
         $recetas = Receta::orderBy('nombre')->get();
+
         return view('catalogo.productos', compact('categorias', 'recetas'));
     }
 
@@ -23,7 +27,7 @@ class ProductoController extends Controller
     {
         $productos = Producto::with('categoria', 'receta');
 
-        $tasaBcv = (float) \App\Models\Configuracion::obtener('tasa_bcv', 818);
+        $tasaBcv = (float) Configuracion::obtener('tasa_bcv', 818);
 
         return datatables()->eloquent($productos)
             ->addColumn('precio_bs', function ($producto) use ($tasaBcv) {
@@ -32,13 +36,13 @@ class ProductoController extends Controller
             ->addColumn('acciones', function ($producto) {
                 return '
                     <div class="row-actions">
-                        <button class="icon-btn" data-act="editar" data-id="' . $producto->id . '" title="Editar">
+                        <button class="icon-btn" data-act="editar" data-id="'.$producto->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn" data-act="ver" data-id="' . $producto->id . '" title="Ver">
+                        <button class="icon-btn" data-act="ver" data-id="'.$producto->id.'" title="Ver">
                             <i class="bi bi-eye"></i>
                         </button>
-                        <button class="icon-btn del" data-act="borrar" data-id="' . $producto->id . '" title="Eliminar">
+                        <button class="icon-btn del" data-act="borrar" data-id="'.$producto->id.'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -50,9 +54,9 @@ class ProductoController extends Controller
 
     public function store(StoreProductoRequest $request)
     {
-        $tasaBcv = app(\App\Services\TasaBcvService::class)->getTasaActual();
-        $precio = app(\App\Services\PrecioService::class)->getPrecio(
-            (object)['tipo_precio' => $request->tipo_precio, 'precio_usd' => $request->precio_usd, 'margen_ganancia' => $request->margen_ganancia],
+        $tasaBcv = app(TasaBcvService::class)->getTasaActual();
+        $precio = app(PrecioService::class)->getPrecio(
+            (object) ['tipo_precio' => $request->tipo_precio, 'precio_usd' => $request->precio_usd, 'margen_ganancia' => $request->margen_ganancia],
             $tasaBcv
         );
 
@@ -94,6 +98,7 @@ class ProductoController extends Controller
     public function destroy(Producto $producto)
     {
         $producto->delete();
+
         return response()->json(['success' => true, 'message' => 'Producto eliminado exitosamente.']);
     }
 }

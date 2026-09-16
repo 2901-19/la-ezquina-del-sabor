@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Producto;
 use App\Models\MateriaPrima;
 
 class StockService
@@ -27,6 +26,7 @@ class StockService
         } elseif ($mp->stock_actual <= $mp->stock_minimo) {
             $estado = 'bajo';
         }
+
         return ['estado' => $estado, 'stock' => $mp->stock_actual];
     }
 }

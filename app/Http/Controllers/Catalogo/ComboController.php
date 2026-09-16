@@ -12,6 +12,7 @@ class ComboController extends Controller
     public function index(Request $request)
     {
         $categorias = Categoria::where('activa', true)->orderBy('nombre')->get();
+
         return view('catalogo.combos', compact('categorias'));
     }
 
@@ -21,10 +22,10 @@ class ComboController extends Controller
             ->addColumn('acciones', function ($combo) {
                 return '
                     <div class="row-actions">
-                        <button class="icon-btn" data-act="editar" data-id="' . $combo->id . '" title="Editar">
+                        <button class="icon-btn" data-act="editar" data-id="'.$combo->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn del" data-act="borrar" data-id="' . $combo->id . '" title="Eliminar">
+                        <button class="icon-btn del" data-act="borrar" data-id="'.$combo->id.'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -49,6 +50,7 @@ class ComboController extends Controller
             'es_combo' => true,
             'activo' => true,
         ]);
+
         return response()->json(['success' => true, 'message' => 'Combo creado exitosamente.']);
     }
 
@@ -60,12 +62,14 @@ class ComboController extends Controller
     public function update(Request $request, Producto $combo)
     {
         $combo->update($request->validate(['nombre' => 'required|string|max:255']));
+
         return response()->json(['success' => true, 'message' => 'Combo actualizado exitosamente.']);
     }
 
     public function destroy(Producto $combo)
     {
         $combo->delete();
+
         return response()->json(['success' => true, 'message' => 'Combo eliminado exitosamente.']);
     }
 }

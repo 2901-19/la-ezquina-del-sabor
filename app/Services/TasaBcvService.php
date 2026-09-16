@@ -16,6 +16,7 @@ class TasaBcvService
 
         try {
             $response = Http::timeout(10)->get('https://api.dolserasa.com/v1/dollar/latest');
+
             return $response->json()['data']['price'] ?? 42.50;
         } catch (\Exception $e) {
             return 42.50;

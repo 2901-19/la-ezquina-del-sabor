@@ -22,7 +22,7 @@ class MermaController extends Controller
             'costo_unitario' => $mp->costo_unitario_usd,
             'cantidad_movimiento' => $validated['cantidad'],
             'tipo_movimiento' => 'merma',
-            'nota' => ucfirst($validated['motivo']) . ($validated['notas'] ? '. ' . $validated['notas'] : ''),
+            'nota' => ucfirst($validated['motivo']).($validated['notas'] ? '. '.$validated['notas'] : ''),
         ]);
 
         return response()->json(['success' => true, 'message' => 'Merma registrada exitosamente.']);
@@ -39,7 +39,7 @@ class MermaController extends Controller
                 return $mov->materiaPrima->nombre ?? '-';
             })
             ->addColumn('acciones', function ($mov) {
-                return '<div class="row-actions"><button class="icon-btn" data-act="ver" data-id="' . $mov->id . '" title="Ver detalle"><i class="bi bi-eye"></i></button></div>';
+                return '<div class="row-actions"><button class="icon-btn" data-act="ver" data-id="'.$mov->id.'" title="Ver detalle"><i class="bi bi-eye"></i></button></div>';
             })
             ->rawColumns(['acciones'])
             ->make(true);

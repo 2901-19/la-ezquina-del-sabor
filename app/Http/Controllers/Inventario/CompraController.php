@@ -56,7 +56,7 @@ class CompraController extends Controller
                 return $compra->compraDetalles->pluck('materiaPrima.nombre')->implode(', ');
             })
             ->addColumn('acciones', function ($compra) {
-                return '<div class="row-actions"><button class="icon-btn" data-act="ver" data-id="' . $compra->id . '" title="Ver detalle"><i class="bi bi-eye"></i></button></div>';
+                return '<div class="row-actions"><button class="icon-btn" data-act="ver" data-id="'.$compra->id.'" title="Ver detalle"><i class="bi bi-eye"></i></button></div>';
             })
             ->rawColumns(['acciones'])
             ->make(true);

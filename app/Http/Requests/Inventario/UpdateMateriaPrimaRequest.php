@@ -8,13 +8,13 @@ class UpdateMateriaPrimaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('permiso', 'editar_inventario');
     }
 
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255|unique:materias_primas,nombre,' . $this->route('materias_prima')?->id,
+            'nombre' => 'required|string|max:255|unique:materias_primas,nombre,'.$this->route('materias_prima')?->id,
             'unidad_medida' => 'required|string|max:50',
             'stock_actual' => 'required|numeric|min:0',
             'stock_minimo' => 'required|numeric|min:0',

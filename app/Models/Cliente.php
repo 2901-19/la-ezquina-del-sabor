@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Cliente extends Model
 {
     protected $table = 'clientes';
+
     protected $fillable = ['nombre', 'telefono', 'direccion_delivery', 'puntos_acumulados'];
+
     protected $casts = ['fecha_registro' => 'date'];
 
     public function comandas(): HasMany

@@ -1,0 +1,25 @@
+# Git Commit Message Convention
+# Format: <type>(<scope>): <description>
+#
+# Types:
+#   feat     - New feature
+#   fix      - Bug fix
+#   refactor - Code refactoring (no behavior change)
+#   chore    - Maintenance tasks (migrations, seeders, config)
+#   docs     - Documentation
+#   test     - Tests
+#   style    - Code formatting (Pint, ESLint)
+#
+# Scopes:
+#   comanda, jornada, catalogo, inventario, clientes,
+#   sistema, auth, reportes, seeders, routes, config
+#
+# Examples:
+#   feat(comanda): add product note field
+#   fix(jornada): save monto_inicial on open
+#   chore(seeder): add permiso_rol seeder
+#
+# Rules:
+#   - Max 72 chars for subject line
+#   - Use imperative mood ("add" not "added")
+#   - Reference issues with #issue-number

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Cliente;
 use App\Models\Comanda;
 
 class ReporteService

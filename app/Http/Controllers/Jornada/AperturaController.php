@@ -11,6 +11,7 @@ class AperturaController extends Controller
     public function show()
     {
         $jornadaAbierta = Jornada::where('estado', 'abierta')->first();
+
         return view('jornada.apertura', compact('jornadaAbierta'));
     }
 
@@ -25,6 +26,7 @@ class AperturaController extends Controller
             'usuario_apertura_id' => auth()->id(),
             'fecha_apertura' => now(),
             'tasa_bcv_apertura' => $request->tasa_bcv,
+            'monto_inicial' => $request->monto_inicial,
             'estado' => 'abierta',
         ]);
 

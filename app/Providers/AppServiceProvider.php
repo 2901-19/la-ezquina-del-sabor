@@ -2,7 +2,17 @@
 
 namespace App\Providers;
 
+use App\Models\Configuracion;
+use App\Models\Usuario;
+use App\Services\ComandaService;
+use App\Services\CreditoService;
+use App\Services\PrecioService;
+use App\Services\PuntosService;
+use App\Services\ReporteService;
+use App\Services\StockService;
+use App\Services\TasaBcvService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -11,17 +21,21 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(\App\Services\TasaBcvService::class);
-        $this->app->singleton(\App\Services\PrecioService::class);
-        $this->app->singleton(\App\Services\StockService::class);
-        $this->app->singleton(\App\Services\PuntosService::class);
-        $this->app->singleton(\App\Services\CreditoService::class);
-        $this->app->singleton(\App\Services\ComandaService::class);
-        $this->app->singleton(\App\Services\ReporteService::class);
+        $this->app->singleton(TasaBcvService::class);
+        $this->app->singleton(PrecioService::class);
+        $this->app->singleton(StockService::class);
+        $this->app->singleton(PuntosService::class);
+        $this->app->singleton(CreditoService::class);
+        $this->app->singleton(ComandaService::class);
+        $this->app->singleton(ReporteService::class);
     }
 
     public function boot(): void
     {
+        Gate::define('permiso', function (Usuario $user, string $permiso) {
+            return $user->rol && $user->rol->permisos->contains('codigo', $permiso);
+        });
+
         RateLimiter::for('login', function ($request) {
             return Limit::perMinute(5)->by($request->username ?? $request->ip());
         });
@@ -47,7 +61,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('layouts.partials.topbar', function ($view) {
-            $tasa = \App\Models\Configuracion::obtener('tasa_bcv', '42.50');
+            $tasa = Configuracion::obtener('tasa_bcv', '42.50');
             $view->with('tasaBcv', $tasa);
         });
     }

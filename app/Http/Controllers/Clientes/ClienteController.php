@@ -13,6 +13,7 @@ class ClienteController extends Controller
     public function index(Request $request)
     {
         $clientes = Cliente::latest()->paginate(15);
+
         return view('clientes.index', compact('clientes'));
     }
 
@@ -28,10 +29,10 @@ class ClienteController extends Controller
             ->addColumn('acciones', function ($cliente) {
                 return '
                     <div class="row-actions">
-                        <button class="icon-btn" data-act="editar" data-id="' . $cliente->id . '" title="Editar">
+                        <button class="icon-btn" data-act="editar" data-id="'.$cliente->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn" data-act="borrar" data-id="' . $cliente->id . '" title="Eliminar">
+                        <button class="icon-btn" data-act="borrar" data-id="'.$cliente->id.'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -44,6 +45,7 @@ class ClienteController extends Controller
     public function store(StoreClienteRequest $request)
     {
         Cliente::create($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Cliente creado exitosamente.']);
     }
 
@@ -55,12 +57,14 @@ class ClienteController extends Controller
     public function update(UpdateClienteRequest $request, Cliente $cliente)
     {
         $cliente->update($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Cliente actualizado exitosamente.']);
     }
 
     public function destroy(Cliente $cliente)
     {
         $cliente->delete();
+
         return response()->json(['success' => true, 'message' => 'Cliente eliminado exitosamente.']);
     }
 }

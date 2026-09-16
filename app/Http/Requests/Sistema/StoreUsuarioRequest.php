@@ -8,7 +8,7 @@ class StoreUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('permiso', 'gestionar_usuarios');
     }
 
     public function rules(): array

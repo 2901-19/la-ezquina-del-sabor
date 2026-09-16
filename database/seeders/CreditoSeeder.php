@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Comanda;
 use App\Models\Cliente;
+use App\Models\Comanda;
 use App\Models\Credito;
+use Illuminate\Database\Seeder;
 
 class CreditoSeeder extends Seeder
 {
@@ -23,12 +23,12 @@ class CreditoSeeder extends Seeder
             $saldo = $monto - $abonado;
 
             Credito::create([
-                'comanda_id'            => $comanda->id,
-                'cliente_id'            => $comanda->cliente_id,
-                'monto_total_usd'       => $monto,
-                'saldo_pendiente_usd'   => round($saldo, 2),
-                'estado'                => $i === 0 ? 'parcial' : ($i === 1 ? 'parcial' : 'pendiente'),
-                'fecha_emision'         => $comanda->fecha_creacion,
+                'comanda_id' => $comanda->id,
+                'cliente_id' => $comanda->cliente_id,
+                'monto_total_usd' => $monto,
+                'saldo_pendiente_usd' => round($saldo, 2),
+                'estado' => $i === 0 ? 'parcial' : ($i === 1 ? 'parcial' : 'pendiente'),
+                'fecha_emision' => $comanda->fecha_creacion,
             ]);
 
             $i++;
