@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Compra extends Model
 {
     protected $table = 'compras';
+
     protected $fillable = ['fecha_compra', 'total', 'referencia'];
+
     protected $casts = ['fecha_compra' => 'date'];
 
     public function compraDetalles(): HasMany

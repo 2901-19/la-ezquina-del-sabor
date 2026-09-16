@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comanda;
+use App\Models\Jornada;
+use App\Services\TasaBcvService;
 use Illuminate\Http\Request;
 
 class ComandaController extends Controller
@@ -52,9 +54,9 @@ class ComandaController extends Controller
             'notas_generales' => 'nullable|string|max:500',
         ]);
 
-        $jornada = \App\Models\Jornada::where('estado', 'abierta')->latest()->first();
+        $jornada = Jornada::where('estado', 'abierta')->latest()->first();
 
-        if (!$jornada) {
+        if (! $jornada) {
             return response()->json(['success' => false, 'message' => 'No hay jornada abierta. Debe abrir una jornada antes de crear comandas.'], 422);
         }
 
@@ -62,7 +64,7 @@ class ComandaController extends Controller
             'jornada_id' => $jornada->id,
             'cliente_id' => $validated['cliente_id'] ?? null,
             'usuario_id' => auth()->id(),
-            'tasa_bcv_aplicada' => app(\App\Services\TasaBcvService::class)->getTasaActual(),
+            'tasa_bcv_aplicada' => app(TasaBcvService::class)->getTasaActual(),
             'numero_correlativo_diario' => Comanda::where('jornada_id', $jornada->id)->count() + 1,
             'nombre_cliente_temporal' => $validated['nombre_cliente_temporal'] ?? null,
             'telefono_delivery' => $validated['telefono_delivery'] ?? null,
@@ -72,7 +74,7 @@ class ComandaController extends Controller
             'total_ve' => 0,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Comanda #' . $comanda->numero_correlativo_diario . ' creada exitosamente.']);
+        return response()->json(['success' => true, 'message' => 'Comanda #'.$comanda->numero_correlativo_diario.' creada exitosamente.']);
     }
 
     public function cocina()

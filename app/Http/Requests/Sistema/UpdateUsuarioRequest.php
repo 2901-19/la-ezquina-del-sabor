@@ -8,14 +8,14 @@ class UpdateUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('permiso', 'gestionar_usuarios');
     }
 
     public function rules(): array
     {
         return [
             'nombre_completo' => 'required|string|max:255',
-            'username' => 'required|string|max:100|unique:usuarios,username,' . $this->route('usuario')?->id,
+            'username' => 'required|string|max:100|unique:usuarios,username,'.$this->route('usuario')?->id,
             'password' => 'nullable|string|min:6',
             'rol_id' => 'required|integer|exists:roles,id',
         ];

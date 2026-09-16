@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\MateriaPrima;
+use Illuminate\Database\Seeder;
 
 class MateriaPrimaSeeder extends Seeder
 {

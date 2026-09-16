@@ -21,10 +21,10 @@ class CategoriaController extends Controller
             ->addColumn('acciones', function ($categoria) {
                 return '
                     <div class="row-actions">
-                        <button class="icon-btn" data-act="editar" data-id="' . $categoria->id . '" title="Editar">
+                        <button class="icon-btn" data-act="editar" data-id="'.$categoria->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn del" data-act="borrar" data-id="' . $categoria->id . '" title="Eliminar">
+                        <button class="icon-btn del" data-act="borrar" data-id="'.$categoria->id.'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -37,6 +37,7 @@ class CategoriaController extends Controller
     public function store(StoreCategoriaRequest $request)
     {
         Categoria::create($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Categoría creada exitosamente.']);
     }
 
@@ -48,12 +49,14 @@ class CategoriaController extends Controller
     public function update(UpdateCategoriaRequest $request, Categoria $categoria)
     {
         $categoria->update($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Categoría actualizada exitosamente.']);
     }
 
     public function destroy(Categoria $categoria)
     {
         $categoria->delete();
+
         return response()->json(['success' => true, 'message' => 'Categoría eliminada exitosamente.']);
     }
 }

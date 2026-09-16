@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Receta;
+use Illuminate\Database\Seeder;
 
 class RecetaSeeder extends Seeder
 {

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Receta extends Model
 {
     protected $table = 'recetas';
+
     protected $fillable = ['nombre', 'descripcion', 'costo_total_usd'];
 
     public function recetaDetalles(): HasMany

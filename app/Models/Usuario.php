@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 
 class Usuario extends Model implements AuthenticatableContract
 {
-    use Authenticatable;
+    use Authenticatable, Authorizable;
 
     protected $table = 'usuarios';
+
     protected $fillable = ['rol_id', 'username', 'password_hash', 'nombre_completo', 'activo'];
+
     protected $casts = ['activo' => 'boolean'];
+
     protected $hidden = ['password_hash'];
 
     public function rol()

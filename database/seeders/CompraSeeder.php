@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Compra;
-use App\Models\CompraDetalle;
+use Illuminate\Database\Seeder;
 
 class CompraSeeder extends Seeder
 {

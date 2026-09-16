@@ -21,10 +21,10 @@ class RecetaController extends Controller
             ->addColumn('acciones', function ($receta) {
                 return '
                     <div class="row-actions">
-                        <button class="icon-btn" data-act="editar" data-id="' . $receta->id . '" title="Editar">
+                        <button class="icon-btn" data-act="editar" data-id="'.$receta->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn del" data-act="borrar" data-id="' . $receta->id . '" title="Eliminar">
+                        <button class="icon-btn del" data-act="borrar" data-id="'.$receta->id.'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -37,18 +37,21 @@ class RecetaController extends Controller
     public function store(StoreRecetaRequest $request)
     {
         Receta::create($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Receta creada exitosamente.']);
     }
 
     public function update(UpdateRecetaRequest $request, Receta $receta)
     {
         $receta->update($request->validated());
+
         return response()->json(['success' => true, 'message' => 'Receta actualizada exitosamente.']);
     }
 
     public function destroy(Receta $receta)
     {
         $receta->delete();
+
         return response()->json(['success' => true, 'message' => 'Receta eliminada exitosamente.']);
     }
 }

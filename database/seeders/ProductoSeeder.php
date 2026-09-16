@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
+use App\Models\ComboDetalle;
 use App\Models\Producto;
+use App\Models\Receta;
+use Illuminate\Database\Seeder;
 
 class ProductoSeeder extends Seeder
 {
@@ -24,7 +26,7 @@ class ProductoSeeder extends Seeder
 
         foreach ($productos as $p) {
             if ($p['tipo_precio'] === 'margen') {
-                $receta = \App\Models\Receta::find($p['receta_id']);
+                $receta = Receta::find($p['receta_id']);
                 $costo = $receta->costo_total_usd;
                 $p['precio_usd'] = round($costo + ($costo * $p['margen_ganancia'] / 100), 2);
             }
@@ -34,17 +36,17 @@ class ProductoSeeder extends Seeder
         // Combo Esquina (id=11)
         $combo = Producto::create([
             'categoria_id' => 4,
-            'receta_id'    => null,
-            'nombre'       => 'Combo Esquina',
-            'tipo_precio'  => 'margen',
+            'receta_id' => null,
+            'nombre' => 'Combo Esquina',
+            'tipo_precio' => 'margen',
             'margen_ganancia' => 10.00,
-            'precio_usd'   => 8.00,
-            'es_combo'     => true,
-            'activo'       => true,
+            'precio_usd' => 8.00,
+            'es_combo' => true,
+            'activo' => true,
         ]);
 
-        \App\Models\ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 1, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
-        \App\Models\ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 5, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
-        \App\Models\ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 6, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
+        ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 1, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
+        ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 5, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
+        ComboDetalle::create(['combo_producto_id' => $combo->id, 'componente_producto_id' => 6, 'cantidad' => 1, 'porcentaje_descuento' => 0]);
     }
 }

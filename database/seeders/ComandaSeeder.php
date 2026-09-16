@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Jornada;
-use App\Models\Comanda;
 use App\Models\Cliente;
+use App\Models\Comanda;
+use App\Models\Jornada;
 use App\Models\Usuario;
+use Illuminate\Database\Seeder;
 
 class ComandaSeeder extends Seeder
 {
@@ -36,18 +36,18 @@ class ComandaSeeder extends Seeder
                 $totalUsd = round(rand(300, 1200) / 100, 2);
 
                 $comanda = Comanda::create([
-                    'jornada_id'                => $jornada->id,
-                    'cliente_id'                => $cliente->id,
-                    'usuario_id'                => $usuario->id,
-                    'tasa_bcv_aplicada'         => $jornada->tasa_bcv_apertura,
+                    'jornada_id' => $jornada->id,
+                    'cliente_id' => $cliente->id,
+                    'usuario_id' => $usuario->id,
+                    'tasa_bcv_aplicada' => $jornada->tasa_bcv_apertura,
                     'numero_correlativo_diario' => str_pad($num, 3, '0', STR_PAD_LEFT),
-                    'nombre_cliente_temporal'   => null,
-                    'telefono_delivery'         => $tipoEntrega === 'delivery' ? $cliente->telefono : null,
-                    'estado_comanda'            => $estado,
-                    'total_usd'                 => $totalUsd,
-                    'total_ve'                  => round($totalUsd * $jornada->tasa_bcv_apertura, 2),
-                    'notas_generales'           => null,
-                    'fecha_creacion'            => $jornada->fecha_apertura->copy()->addMinutes(rand(10, 480)),
+                    'nombre_cliente_temporal' => null,
+                    'telefono_delivery' => $tipoEntrega === 'delivery' ? $cliente->telefono : null,
+                    'estado_comanda' => $estado,
+                    'total_usd' => $totalUsd,
+                    'total_ve' => round($totalUsd * $jornada->tasa_bcv_apertura, 2),
+                    'notas_generales' => null,
+                    'fecha_creacion' => $jornada->fecha_apertura->copy()->addMinutes(rand(10, 480)),
                 ]);
 
                 $num++;

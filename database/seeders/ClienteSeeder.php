@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Cliente;
+use Illuminate\Database\Seeder;
 
 class ClienteSeeder extends Seeder
 {
@@ -19,7 +19,7 @@ class ClienteSeeder extends Seeder
             ['nombre' => 'Roberto Díaz',      'telefono' => '0416-2223344', 'direccion_delivery' => null,                             'puntos_acumulados' => 30],
             ['nombre' => 'Lisbeth Montilla',  'telefono' => '0414-6667788', 'direccion_delivery' => 'Urb. Las Mercedes, Caracas',    'puntos_acumulados' => 180],
             ['nombre' => 'Francisco Suárez',  'telefono' => '0412-1112233', 'direccion_delivery' => 'Av. Francisco de Miranda',       'puntos_acumulados' => 60],
-            ['nombre' => 'Elena Vargas',      'telefono' => '0424-4445566', 'direccion_delivery' => 'Calle Principal, Los Dos Caminos','puntos_acumulados' => 95],
+            ['nombre' => 'Elena Vargas',      'telefono' => '0424-4445566', 'direccion_delivery' => 'Calle Principal, Los Dos Caminos', 'puntos_acumulados' => 95],
             ['nombre' => 'Miguel Torres',     'telefono' => '0416-9990011', 'direccion_delivery' => null,                             'puntos_acumulados' => 40],
             ['nombre' => 'Patricia Ramos',    'telefono' => '0414-3332211', 'direccion_delivery' => 'Av. Norte, El Hatillo',          'puntos_acumulados' => 110],
         ];

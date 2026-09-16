@@ -16,8 +16,10 @@ class PuntosService
     {
         if ($cliente->puntos_acumulados >= $puntos) {
             $cliente->decrement('puntos_acumulados', $puntos);
+
             return true;
         }
+
         return false;
     }
 }

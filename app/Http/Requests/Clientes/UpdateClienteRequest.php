@@ -8,7 +8,7 @@ class UpdateClienteRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('permiso', 'editar_clientes');
     }
 
     public function rules(): array

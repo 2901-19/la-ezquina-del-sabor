@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Producto extends Model
 {
     protected $table = 'productos';
+
     protected $fillable = ['categoria_id', 'receta_id', 'nombre', 'tipo_precio', 'margen_ganancia', 'precio_usd', 'es_combo', 'activo'];
+
     protected $casts = ['activo' => 'boolean', 'es_combo' => 'boolean'];
 
     public function categoria()
