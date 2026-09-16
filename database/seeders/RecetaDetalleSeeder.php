@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\MateriaPrima;
+use App\Models\Receta;
 use App\Models\RecetaDetalle;
 use Illuminate\Database\Seeder;
 
@@ -9,46 +11,65 @@ class RecetaDetalleSeeder extends Seeder
 {
     public function run(): void
     {
-        // Receta Hamburguesa Esquina (id=1): carne, pan, queso
-        RecetaDetalle::create(['receta_id' => 1, 'materia_prima_id' => 1, 'cantidad_requerida' => 0.15]);
-        RecetaDetalle::create(['receta_id' => 1, 'materia_prima_id' => 2, 'cantidad_requerida' => 1.00]);
-        RecetaDetalle::create(['receta_id' => 1, 'materia_prima_id' => 4, 'cantidad_requerida' => 0.03]);
+        $mp = fn (string $nombre) => MateriaPrima::where('nombre', $nombre)->first()?->id;
+        $receta = fn (string $nombre) => Receta::where('nombre', $nombre)->first()?->id;
 
-        // Receta Perro Caliente (id=2): salchicha, pan
-        RecetaDetalle::create(['receta_id' => 2, 'materia_prima_id' => 5, 'cantidad_requerida' => 1.00]);
-        RecetaDetalle::create(['receta_id' => 2, 'materia_prima_id' => 2, 'cantidad_requerida' => 1.00]);
+        $detalles = [
+            // Receta Hamburguesa Esquina: carne, pan, queso
+            ['receta' => 'Receta Hamburguesa Esquina', 'materia' => 'Carne molida',    'cantidad' => 0.15],
+            ['receta' => 'Receta Hamburguesa Esquina', 'materia' => 'Pan de hamburguesa', 'cantidad' => 1.00],
+            ['receta' => 'Receta Hamburguesa Esquina', 'materia' => 'Queso amarillo',   'cantidad' => 0.03],
 
-        // Receta Arepa Dominó (id=3): arepa, frijoles, queso
-        RecetaDetalle::create(['receta_id' => 3, 'materia_prima_id' => 6,  'cantidad_requerida' => 1.00]);
-        RecetaDetalle::create(['receta_id' => 3, 'materia_prima_id' => 12, 'cantidad_requerida' => 0.10]);
-        RecetaDetalle::create(['receta_id' => 3, 'materia_prima_id' => 4,  'cantidad_requerida' => 0.05]);
+            // Receta Perro Caliente: salchicha, pan
+            ['receta' => 'Receta Perro Caliente', 'materia' => 'Salchicha',           'cantidad' => 1.00],
+            ['receta' => 'Receta Perro Caliente', 'materia' => 'Pan de hamburguesa',   'cantidad' => 1.00],
 
-        // Receta Arepa Reina Pepiada (id=4): arepa, aguacate
-        RecetaDetalle::create(['receta_id' => 4, 'materia_prima_id' => 6,  'cantidad_requerida' => 1.00]);
-        RecetaDetalle::create(['receta_id' => 4, 'materia_prima_id' => 10, 'cantidad_requerida' => 0.50]);
+            // Receta Arepa Dominó: arepa, frijoles, queso
+            ['receta' => 'Receta Arepa Dominó', 'materia' => 'Arepa',            'cantidad' => 1.00],
+            ['receta' => 'Receta Arepa Dominó', 'materia' => 'Frijoles negros',  'cantidad' => 0.10],
+            ['receta' => 'Receta Arepa Dominó', 'materia' => 'Queso amarillo',   'cantidad' => 0.05],
 
-        // Receta Papas Fritas (id=5): papas, aceite
-        RecetaDetalle::create(['receta_id' => 5, 'materia_prima_id' => 3, 'cantidad_requerida' => 0.20]);
-        RecetaDetalle::create(['receta_id' => 5, 'materia_prima_id' => 8, 'cantidad_requerida' => 0.05]);
+            // Receta Arepa Reina Pepiada: arepa, aguacate
+            ['receta' => 'Receta Arepa Reina Pepiada', 'materia' => 'Arepa',       'cantidad' => 1.00],
+            ['receta' => 'Receta Arepa Reina Pepiada', 'materia' => 'Aguacate',    'cantidad' => 0.50],
 
-        // Receta Hamburguesa Especial (id=6): carne doble, tocineta, pan, queso
-        RecetaDetalle::create(['receta_id' => 6, 'materia_prima_id' => 1, 'cantidad_requerida' => 0.30]);
-        RecetaDetalle::create(['receta_id' => 6, 'materia_prima_id' => 9, 'cantidad_requerida' => 0.05]);
-        RecetaDetalle::create(['receta_id' => 6, 'materia_prima_id' => 2, 'cantidad_requerida' => 1.00]);
-        RecetaDetalle::create(['receta_id' => 6, 'materia_prima_id' => 4, 'cantidad_requerida' => 0.04]);
+            // Receta Papas Fritas: papas, aceite
+            ['receta' => 'Receta Papas Fritas', 'materia' => 'Papas',     'cantidad' => 0.20],
+            ['receta' => 'Receta Papas Fritas', 'materia' => 'Aceite',    'cantidad' => 0.05],
 
-        // Receta Tocineta Extra (id=7): tocineta
-        RecetaDetalle::create(['receta_id' => 7, 'materia_prima_id' => 9, 'cantidad_requerida' => 0.15]);
+            // Receta Hamburguesa Especial: carne doble, tocineta, pan, queso
+            ['receta' => 'Receta Hamburguesa Especial', 'materia' => 'Carne molida',    'cantidad' => 0.30],
+            ['receta' => 'Receta Hamburguesa Especial', 'materia' => 'Tocineta',        'cantidad' => 0.05],
+            ['receta' => 'Receta Hamburguesa Especial', 'materia' => 'Pan de hamburguesa', 'cantidad' => 1.00],
+            ['receta' => 'Receta Hamburguesa Especial', 'materia' => 'Queso amarillo',   'cantidad' => 0.04],
 
-        // Receta Jugo Natural (id=8): jugo de naranja
-        RecetaDetalle::create(['receta_id' => 8, 'materia_prima_id' => 11, 'cantidad_requerida' => 0.50]);
+            // Receta Tocineta Extra: tocineta
+            ['receta' => 'Receta Tocineta Extra', 'materia' => 'Tocineta', 'cantidad' => 0.15],
 
-        // Receta Arepa Dominó Especial (id=9): arepa, frijoles, queso extra
-        RecetaDetalle::create(['receta_id' => 9, 'materia_prima_id' => 6,  'cantidad_requerida' => 2.00]);
-        RecetaDetalle::create(['receta_id' => 9, 'materia_prima_id' => 12, 'cantidad_requerida' => 0.15]);
-        RecetaDetalle::create(['receta_id' => 9, 'materia_prima_id' => 4,  'cantidad_requerida' => 0.08]);
+            // Receta Jugo Natural: jugo de naranja
+            ['receta' => 'Receta Jugo Natural', 'materia' => 'Jugo de naranja', 'cantidad' => 0.50],
 
-        // Receta Refresco (id=10): refresco
-        RecetaDetalle::create(['receta_id' => 10, 'materia_prima_id' => 7, 'cantidad_requerida' => 1.00]);
+            // Receta Arepa Dominó Especial: arepa doble, frijoles, queso extra
+            ['receta' => 'Receta Arepa Dominó Especial', 'materia' => 'Arepa',           'cantidad' => 2.00],
+            ['receta' => 'Receta Arepa Dominó Especial', 'materia' => 'Frijoles negros', 'cantidad' => 0.15],
+            ['receta' => 'Receta Arepa Dominó Especial', 'materia' => 'Queso amarillo',  'cantidad' => 0.08],
+
+            // Receta Refresco: refresco
+            ['receta' => 'Receta Refresco', 'materia' => 'Refresco', 'cantidad' => 1.00],
+        ];
+
+        foreach ($detalles as $d) {
+            $recetaId = $receta($d['receta']);
+            $materiaId = $mp($d['materia']);
+
+            if ($recetaId && $materiaId) {
+                RecetaDetalle::firstOrCreate(
+                    ['receta_id' => $recetaId, 'materia_prima_id' => $materiaId],
+                    ['cantidad_requerida' => $d['cantidad']]
+                );
+            }
+        }
+
+        Receta::all()->each->recalcularCosto();
     }
 }

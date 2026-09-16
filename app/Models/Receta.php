@@ -25,4 +25,20 @@ class Receta extends Model
     {
         return $this->hasOne(Producto::class);
     }
+
+    public function recalcularCosto(): void
+    {
+        $costo = $this->recetaDetalles()->with(['materiaPrima', 'recetaBase'])->get()->sum(function ($detalle) {
+            if ($detalle->materia_prima_id && $detalle->materiaPrima) {
+                return $detalle->materiaPrima->costo_unitario_usd * $detalle->cantidad_requerida;
+            }
+            if ($detalle->receta_base_id && $detalle->recetaBase) {
+                return $detalle->recetaBase->costo_total_usd * $detalle->cantidad_requerida;
+            }
+
+            return 0;
+        });
+
+        $this->update(['costo_total_usd' => round($costo, 2)]);
+    }
 }

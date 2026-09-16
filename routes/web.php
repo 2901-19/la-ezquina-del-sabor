@@ -48,7 +48,7 @@ Route::middleware(['auth'])->group(function () {
             ->except(['show', 'create', 'edit', 'index'])
             ->names('catalogo.categorias');
         Route::resource('catalogo/recetas', RecetaController::class)
-            ->except(['show', 'create', 'edit', 'index'])
+            ->except(['create', 'edit', 'index'])
             ->names('catalogo.recetas');
         Route::post('catalogo/combos', [ComboController::class, 'store'])->name('catalogo.combos.store');
         Route::put('catalogo/combos/{combo}', [ComboController::class, 'update'])->name('catalogo.combos.update');
