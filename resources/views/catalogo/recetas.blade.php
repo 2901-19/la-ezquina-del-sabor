@@ -63,9 +63,9 @@
                                 <label class="label">Costo total calculado</label>
                                 <div class="d-flex align-items-center justify-content-between px-3" style="height:calc(1.5em + 1rem + 2px);background:var(--surface-sunken);border:1px solid var(--border);border-radius:var(--radius-md);">
                                     <span class="text-muted" style="font-size:11px;">auto</span>
-                                    <span style="text-align:right;">
-                                        <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="costoTotalDisplay">$ 0.00</span><br>
-                                        <span class="font-monospace text-muted" style="font-size:11px;" id="costoTotalDisplayBs">Bs 0,00</span>
+                                    <span class="d-flex align-items-center justify-content-end gap-3" style="text-align:right;">
+                                        <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;white-space:nowrap;" id="costoTotalDisplay">$ 0.00</span>
+                                        <span class="font-monospace text-muted" style="font-size:13px;white-space:nowrap;" id="costoTotalDisplayBs">Bs 0,00</span>
                                     </span>
                                 </div>
                             </div>
@@ -110,7 +110,7 @@
 
 <!-- Modal Ver Receta -->
 <div class="modal fade" id="modalVerReceta" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content modal-surface">
             <div class="modal-header modal-header-brand">
                 <h5 class="modal-title" id="verRecetaTitle">Detalle de receta</h5>
@@ -135,9 +135,9 @@
                             <label class="label">Costo total</label>
                             <div class="d-flex align-items-center justify-content-between px-3" style="height:calc(1.5em + 1rem + 2px);background:var(--surface-sunken);border:1px solid var(--border);border-radius:var(--radius-md);">
                                 <span class="text-muted" style="font-size:11px;">USD</span>
-                                <span style="text-align:right;">
-                                    <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="verRecetaCosto">$ 0.00</span><br>
-                                    <span class="font-monospace text-muted" style="font-size:11px;" id="verRecetaCostoBs">Bs 0,00</span>
+                                <span class="d-flex align-items-center justify-content-end gap-3" style="text-align:right;">
+                                    <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;white-space:nowrap;" id="verRecetaCosto">$ 0.00</span>
+                                    <span class="font-monospace text-muted" style="font-size:13px;white-space:nowrap;" id="verRecetaCostoBs">Bs 0,00</span>
                                 </span>
                             </div>
                         </div>
