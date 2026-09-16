@@ -8,7 +8,7 @@
     <div class="topbar-right">
         <div class="tasa-chip">
             <span class="tasa-label">BCV</span>
-            <span id="tasaBcv">{{ $tasaBcv ?? '42.50' }}</span>
+            <span id="tasaBcv">{{ $tasaBcv ?? '818.00' }}</span>
         </div>
         <div class="work-status open">
             <span class="dot"></span>

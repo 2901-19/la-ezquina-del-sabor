@@ -63,7 +63,10 @@
                                 <label class="label">Costo total calculado</label>
                                 <div class="d-flex align-items-center justify-content-between px-3" style="height:calc(1.5em + 1rem + 2px);background:var(--surface-sunken);border:1px solid var(--border);border-radius:var(--radius-md);">
                                     <span class="text-muted" style="font-size:11px;">auto</span>
-                                    <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="costoTotalDisplay">$ 0.00</span>
+                                    <span style="text-align:right;">
+                                        <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="costoTotalDisplay">$ 0.00</span><br>
+                                        <span class="font-monospace text-muted" style="font-size:11px;" id="costoTotalDisplayBs">Bs 0,00</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -132,7 +135,10 @@
                             <label class="label">Costo total</label>
                             <div class="d-flex align-items-center justify-content-between px-3" style="height:calc(1.5em + 1rem + 2px);background:var(--surface-sunken);border:1px solid var(--border);border-radius:var(--radius-md);">
                                 <span class="text-muted" style="font-size:11px;">USD</span>
-                                <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="verRecetaCosto">$ 0.00</span>
+                                <span style="text-align:right;">
+                                    <span class="fw-bold font-monospace" style="color:var(--accent);font-size:18px;" id="verRecetaCosto">$ 0.00</span><br>
+                                    <span class="font-monospace text-muted" style="font-size:11px;" id="verRecetaCostoBs">Bs 0,00</span>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -167,7 +173,18 @@
 <script>
 var MATERIAS_PRIMAS = @json($materiasPrimas->mapWithKeys(fn($mp) => [$mp->id => ['nombre' => $mp->nombre, 'costo' => (float)$mp->costo_unitario_usd, 'unidad' => $mp->unidad_medida]]));
 var RECETAS_DISPONIBLES = @json($recetas->mapWithKeys(fn($r) => [$r->id => ['nombre' => $r->nombre, 'costo' => (float)$r->costo_total_usd]]));
+var TASA_BCV_RECETAS = @json((float) $tasaBcv);
 var indiceFila = 0;
+
+function formatoBs(valor) {
+    var partes = valor.toFixed(2).split('.');
+    var entero = partes[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return 'Bs ' + entero + ',' + partes[1];
+}
+
+function actualizarCostoTotalBs(totalUsd) {
+    document.getElementById('costoTotalDisplayBs').textContent = formatoBs(totalUsd * TASA_BCV_RECETAS);
+}
 
 function agregarFila(materiaPrimaId, recetaBaseId, cantidad, detalleId) {
     indiceFila++;
@@ -281,6 +298,7 @@ function recalcularCostoTotal() {
         total += val;
     });
     document.getElementById('costoTotalDisplay').textContent = '$ ' + total.toFixed(2);
+    document.getElementById('costoTotalDisplayBs').textContent = formatoBs(total * TASA_BCV_RECETAS);
 }
 
 function actualizarEmptyState() {
@@ -322,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tbody) tbody.innerHTML = '';
             indiceFila = 0;
             document.getElementById('costoTotalDisplay').textContent = '$ 0.00';
+            document.getElementById('costoTotalDisplayBs').textContent = 'Bs 0,00';
             actualizarEmptyState();
         }
     });
@@ -354,7 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             document.getElementById('verRecetaNombre').textContent = receta.nombre || '—';
             document.getElementById('verRecetaDescripcion').textContent = receta.descripcion || '—';
-            document.getElementById('verRecetaCosto').textContent = '$ ' + Number(receta.costo_total_usd || 0).toFixed(2);
+            var costoTotal = Number(receta.costo_total_usd || 0);
+            document.getElementById('verRecetaCosto').textContent = '$ ' + costoTotal.toFixed(2);
+            document.getElementById('verRecetaCostoBs').textContent = formatoBs(costoTotal * TASA_BCV_RECETAS);
 
             var tbody = document.getElementById('verRecetaIngredientes');
             tbody.innerHTML = '';

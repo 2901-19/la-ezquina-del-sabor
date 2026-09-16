@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalogo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalogo\StoreRecetaRequest;
 use App\Http\Requests\Catalogo\UpdateRecetaRequest;
+use App\Models\Configuracion;
 use App\Models\MateriaPrima;
 use App\Models\Receta;
 use Illuminate\Http\Request;
@@ -16,8 +17,9 @@ class RecetaController extends Controller
     {
         $materiasPrimas = MateriaPrima::orderBy('nombre')->get();
         $recetas = Receta::orderBy('nombre')->get();
+        $tasaBcv = (float) Configuracion::obtener('tasa_bcv', 818.00);
 
-        return view('catalogo.recetas', compact('materiasPrimas', 'recetas'));
+        return view('catalogo.recetas', compact('materiasPrimas', 'recetas', 'tasaBcv'));
     }
 
     public function data(Request $request)

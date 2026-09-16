@@ -313,4 +313,65 @@ class RecetaCrudTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    public function test_costo_receta_se_actualiza_al_cambiar_costo_de_materia_prima(): void
+    {
+        $mp = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 3.00]);
+        $receta = Receta::create(['nombre' => 'Hamburguesa']);
+        RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $mp->id, 'cantidad_requerida' => 0.15]);
+        $receta->recalcularCosto();
+
+        $this->assertEquals(0.45, $receta->fresh()->costo_total_usd);
+
+        $mp->update(['costo_unitario_usd' => 6.00]);
+
+        $this->assertEquals(0.90, $receta->fresh()->costo_total_usd);
+    }
+
+    public function test_costo_receta_se_actualiza_al_cambiar_costo_de_sub_receta(): void
+    {
+        $mp = MateriaPrima::create(['nombre' => 'Harina', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 2.00]);
+        $base = Receta::create(['nombre' => 'Salsa Especial']);
+        RecetaDetalle::create(['receta_id' => $base->id, 'materia_prima_id' => $mp->id, 'cantidad_requerida' => 0.50]);
+        $base->recalcularCosto();
+
+        $padre = Receta::create(['nombre' => 'Perro con Salsa']);
+        RecetaDetalle::create(['receta_id' => $padre->id, 'receta_base_id' => $base->id, 'cantidad_requerida' => 2]);
+        $padre->recalcularCosto();
+
+        $this->assertEquals(1.00, $base->fresh()->costo_total_usd);
+        $this->assertEquals(2.00, $padre->fresh()->costo_total_usd);
+
+        $mp->update(['costo_unitario_usd' => 4.00]);
+
+        $this->assertEquals(2.00, $base->fresh()->costo_total_usd);
+        $this->assertEquals(4.00, $padre->fresh()->costo_total_usd);
+    }
+
+    public function test_costo_se_propaga_en_cadena_de_sub_recetas(): void
+    {
+        $mp = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'costo_unitario_usd' => 2.00]);
+
+        $nivel1 = Receta::create(['nombre' => 'Mezcla Carne']);
+        RecetaDetalle::create(['receta_id' => $nivel1->id, 'materia_prima_id' => $mp->id, 'cantidad_requerida' => 1]);
+        $nivel1->recalcularCosto();
+
+        $nivel2 = Receta::create(['nombre' => 'Base Hamburguesa']);
+        RecetaDetalle::create(['receta_id' => $nivel2->id, 'receta_base_id' => $nivel1->id, 'cantidad_requerida' => 0.50]);
+        $nivel2->recalcularCosto();
+
+        $nivel3 = Receta::create(['nombre' => 'Hamburguesa Final']);
+        RecetaDetalle::create(['receta_id' => $nivel3->id, 'receta_base_id' => $nivel2->id, 'cantidad_requerida' => 2]);
+        $nivel3->recalcularCosto();
+
+        $this->assertEquals(2.00, $nivel1->fresh()->costo_total_usd);
+        $this->assertEquals(1.00, $nivel2->fresh()->costo_total_usd);
+        $this->assertEquals(2.00, $nivel3->fresh()->costo_total_usd);
+
+        $mp->update(['costo_unitario_usd' => 6.00]);
+
+        $this->assertEquals(6.00, $nivel1->fresh()->costo_total_usd);
+        $this->assertEquals(3.00, $nivel2->fresh()->costo_total_usd);
+        $this->assertEquals(6.00, $nivel3->fresh()->costo_total_usd);
+    }
 }

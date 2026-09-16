@@ -7,8 +7,19 @@ window.jQuery = jQuery;
 window.$ = jQuery;
 window.Swal = Swal;
 
-var TASA_BCV = 42.50;
+var TASA_BCV = 818.00;
 window.TASA_BCV = TASA_BCV;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var tasaEl = document.getElementById('tasaBcv');
+    if (tasaEl) {
+        var tasa = parseFloat(tasaEl.textContent);
+        if (!isNaN(tasa) && tasa > 0) {
+            TASA_BCV = tasa;
+            window.TASA_BCV = tasa;
+        }
+    }
+});
 
 function showToast(msg, tipo) {
     var map = {success:'success', error:'error', info:'info'};
