@@ -383,7 +383,13 @@ function initInventarioDataTable() {
     // Materias primas
     var matTable = $('#tablaMaterias').DataTable({
         processing: true, serverSide: true,
-        ajax: '{{ route("inventario.materias-primas.data") }}',
+        ajax: {
+            url: '{{ route("inventario.materias-primas.data") }}',
+            data: function(d) {
+                var f = document.getElementById('filtroStock');
+                if (f && f.value) d.estado_stock = f.value;
+            }
+        },
         columns: [
             {data:'nombre', name:'nombre'},
             {data:'unidad_medida', name:'unidad_medida'},
@@ -406,7 +412,7 @@ function initInventarioDataTable() {
             zeroRecords: 'Sin resultados', loadingRecords: 'Cargando...', paginate:{first:'<i class="bi bi-chevron-double-left"></i>',last:'<i class="bi bi-chevron-double-right"></i>',next:'<i class="bi bi-chevron-right"></i>',previous:'<i class="bi bi-chevron-left"></i>'}
         }
     });
-    $('#filtroStock').on('change', function() { matTable.column(2).search(this.value || '').draw(); });
+    $('#filtroStock').on('change', function() { matTable.ajax.reload(); });
 
     // Compras
     $('#tablaCompras').DataTable({

@@ -135,4 +135,49 @@ class MateriaPrimaCrudTest extends TestCase
             ->assertJsonPath('data.nombre', 'Mantequilla')
             ->assertJsonPath('data.estado_stock', 'critico');
     }
+
+    public function test_data_filtra_por_estado_stock(): void
+    {
+        MateriaPrima::create(['nombre' => 'Critica', 'unidad_medida' => 'kg', 'stock_actual' => 1, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Baja', 'unidad_medida' => 'kg', 'stock_actual' => 12, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Optima', 'unidad_medida' => 'kg', 'stock_actual' => 100, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+
+        $response = $this->actingAs($this->user)->getJson('/inventario/materias-primas/data?estado_stock=critico');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['nombre' => 'Critica'])
+            ->assertJsonFragment(['estado_stock' => 'critico'])
+            ->assertJsonMissing(['nombre' => 'Baja'])
+            ->assertJsonMissing(['nombre' => 'Optima']);
+    }
+
+    public function test_data_filtra_por_estado_stock_optimo(): void
+    {
+        MateriaPrima::create(['nombre' => 'Critica', 'unidad_medida' => 'kg', 'stock_actual' => 1, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Baja', 'unidad_medida' => 'kg', 'stock_actual' => 12, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Optima', 'unidad_medida' => 'kg', 'stock_actual' => 100, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+
+        $response = $this->actingAs($this->user)->getJson('/inventario/materias-primas/data?estado_stock=optimo');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['nombre' => 'Optima'])
+            ->assertJsonFragment(['estado_stock' => 'optimo'])
+            ->assertJsonMissing(['nombre' => 'Critica'])
+            ->assertJsonMissing(['nombre' => 'Baja']);
+    }
+
+    public function test_data_filtra_por_estado_stock_bajo(): void
+    {
+        MateriaPrima::create(['nombre' => 'Critica', 'unidad_medida' => 'kg', 'stock_actual' => 1, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Baja', 'unidad_medida' => 'kg', 'stock_actual' => 12, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+        MateriaPrima::create(['nombre' => 'Optima', 'unidad_medida' => 'kg', 'stock_actual' => 100, 'stock_minimo' => 10, 'costo_unitario_usd' => 1.0]);
+
+        $response = $this->actingAs($this->user)->getJson('/inventario/materias-primas/data?estado_stock=bajo');
+
+        $response->assertStatus(200)
+            ->assertJsonFragment(['nombre' => 'Baja'])
+            ->assertJsonFragment(['estado_stock' => 'bajo'])
+            ->assertJsonMissing(['nombre' => 'Critica'])
+            ->assertJsonMissing(['nombre' => 'Optima']);
+    }
 }

@@ -29,7 +29,13 @@ class MateriaPrimaController extends Controller
 
     public function data(Request $request)
     {
-        return datatables()->eloquent(MateriaPrima::query())
+        $query = MateriaPrima::query();
+
+        if ($request->filled('estado_stock')) {
+            $this->filtrarPorEstado($query, $request->estado_stock);
+        }
+
+        return datatables()->eloquent($query)
             ->addColumn('estado_stock', fn ($mp) => $this->estadoStock($mp))
             ->editColumn('stock_actual', fn ($mp) => '<span class="stock '.$this->estadoStock($mp).'">'.number_format($mp->stock_actual, 2).'</span>')
             ->editColumn('costo_unitario_usd', fn ($mp) => '$ '.number_format($mp->costo_unitario_usd, 2))
@@ -70,6 +76,28 @@ class MateriaPrimaController extends Controller
         }
 
         return 'optimo';
+    }
+
+    private function filtrarPorEstado($query, string $estado): void
+    {
+        $critico = fn ($q) => $q->where('stock_actual', '<=', 0)
+            ->orWhere(fn ($q2) => $q2->where('stock_minimo', '>', 0)
+                ->whereRaw('stock_actual <= stock_minimo * 0.5'));
+
+        $bajo = fn ($q) => $q->where('stock_minimo', '>', 0)
+            ->where('stock_actual', '>', 0)
+            ->whereRaw('stock_actual > stock_minimo * 0.5')
+            ->whereRaw('stock_actual <= stock_minimo * 1.5');
+
+        if ($estado === 'critico') {
+            $query->where($critico);
+        } elseif ($estado === 'bajo') {
+            $query->where($bajo);
+        } elseif ($estado === 'optimo') {
+            $query->where(function ($q) use ($critico, $bajo) {
+                $q->whereNot($critico)->whereNot($bajo);
+            });
+        }
     }
 
     public function store(StoreMateriaPrimaRequest $request)

@@ -18,6 +18,14 @@ class UsuarioController extends Controller
     public function data(Request $request)
     {
         return datatables()->eloquent(Usuario::with('rol'))
+            ->filterColumn('rol_id', function ($query, $keyword) {
+                $query->whereHas('rol', function ($q) use ($keyword) {
+                    $q->where('nombre', 'ilike', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('activo', function ($query, $keyword) {
+                $query->where('activo', $keyword === '1');
+            })
             ->addColumn('acciones', function ($usuario) {
                 return '
                     <div class="row-actions">

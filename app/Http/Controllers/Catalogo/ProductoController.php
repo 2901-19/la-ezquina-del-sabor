@@ -30,6 +30,14 @@ class ProductoController extends Controller
         $tasaBcv = (float) Configuracion::obtener('tasa_bcv', 818);
 
         return datatables()->eloquent($productos)
+            ->filterColumn('categoria_id', function ($query, $keyword) {
+                $query->whereHas('categoria', function ($q) use ($keyword) {
+                    $q->where('nombre', 'ilike', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('activo', function ($query, $keyword) {
+                $query->where('activo', strtolower($keyword) === 'inactivo' ? false : true);
+            })
             ->addColumn('precio_bs', function ($producto) use ($tasaBcv) {
                 return round($producto->precio_usd * $tasaBcv, 2);
             })
