@@ -22,6 +22,8 @@ class MateriaPrimaController extends Controller
 
     public function show(MateriaPrima $materias_prima)
     {
+        $materias_prima->estado_stock = $this->estadoStock($materias_prima);
+
         return response()->json(['success' => true, 'data' => $materias_prima]);
     }
 
@@ -34,6 +36,9 @@ class MateriaPrimaController extends Controller
             ->addColumn('acciones', function ($mp) {
                 return '
                     <div class="row-actions">
+                        <button class="icon-btn" data-act="ver-materia" data-id="'.$mp->id.'" title="Ver detalle">
+                            <i class="bi bi-eye"></i>
+                        </button>
                         <button class="icon-btn" data-act="movimientos" data-id="'.$mp->id.'" data-nombre="'.e($mp->nombre).'" title="Movimientos">
                             <i class="bi bi-clock-history"></i>
                         </button>

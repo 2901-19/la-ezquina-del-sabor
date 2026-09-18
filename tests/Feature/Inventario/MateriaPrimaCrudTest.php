@@ -123,4 +123,16 @@ class MateriaPrimaCrudTest extends TestCase
             ->assertJsonFragment(['estado_stock' => 'critico'])
             ->assertJsonFragment(['estado_stock' => 'optimo']);
     }
+
+    public function test_show_incluye_estado_stock(): void
+    {
+        $mp = MateriaPrima::create(['nombre' => 'Mantequilla', 'unidad_medida' => 'kg', 'stock_actual' => 5, 'stock_minimo' => 10, 'costo_unitario_usd' => 2.5]);
+
+        $response = $this->actingAs($this->user)->getJson('/inventario/materias-primas/'.$mp->id);
+
+        $response->assertStatus(200)
+            ->assertJson(['success' => true])
+            ->assertJsonPath('data.nombre', 'Mantequilla')
+            ->assertJsonPath('data.estado_stock', 'critico');
+    }
 }

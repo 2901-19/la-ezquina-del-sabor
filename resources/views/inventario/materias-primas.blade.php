@@ -183,6 +183,22 @@
     </div>
 </div>
 
+<!-- Modal Ver Materia Prima -->
+<div class="modal fade" id="modalVerMateria" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modal-surface">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title" id="verMateriaTitle">Detalle de materia prima</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="verMateriaBody"></div>
+            <div class="modal-footer modal-footer-brand">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal Registrar Compra -->
 <div class="modal fade" id="modalCompra" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -448,6 +464,33 @@ function initInventarioDataTable() {
 
 // Handlers de acciones en la tabla
 document.addEventListener('click', function(e) {
+    // Ver detalle materia prima
+    var verMp = e.target.closest('[data-act="ver-materia"]');
+    if (verMp) {
+        e.preventDefault();
+        var mpId = verMp.getAttribute('data-id');
+        fetch('/inventario/materias-primas/' + mpId, { credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'} })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            var mp = res.data;
+            var estados = {critico:'Crítico', bajo:'Bajo', optimo:'Óptimo'};
+            var cls = {critico:'badge-merma', bajo:'badge-salida', optimo:'badge-entrada'};
+            var html = '<div class="row g-3">';
+            html += '<div class="col-md-12"><div class="text-muted" style="font-size:12px">Nombre</div><div class="fw-bold fs-5">'+(mp.nombre || '—')+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Unidad de medida</div><div class="fw-bold">'+(mp.unidad_medida || '—')+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Estado del stock</div><div><span class="badge-mov '+(cls[mp.estado_stock]||'')+'">'+(estados[mp.estado_stock]||mp.estado_stock||'—')+'</span></div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Existencias</div><div class="fw-bold stock '+(mp.estado_stock||'')+'">'+Number(mp.stock_actual).toFixed(2)+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Nivel mínimo</div><div class="fw-bold">'+Number(mp.stock_minimo).toFixed(2)+'</div></div>';
+            html += '<div class="col-md-12"><div class="text-muted" style="font-size:12px">Costo unitario (USD)</div><div class="fw-bold font-monospace">$ '+Number(mp.costo_unitario_usd).toFixed(2)+'</div></div>';
+            html += '</div>';
+            document.getElementById('verMateriaTitle').textContent = 'Detalle de materia prima';
+            document.getElementById('verMateriaBody').innerHTML = html;
+            openModal('modalVerMateria');
+        })
+        .catch(function() { showToast('Error al cargar la materia prima', 'error'); });
+        return;
+    }
+
     // Movimientos por MP (desde tabla materia prima)
     var movBtn = e.target.closest('[data-act="movimientos"]');
     if (movBtn) {
