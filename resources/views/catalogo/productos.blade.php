@@ -94,10 +94,13 @@
                                     </div>
                                     <div id="bloqueMargen">
                                         <div class="field">
-                                            <label class="switch" id="wrapIndexarCosto" style="display:none;">
+                                            <div class="switch-row" id="wrapIndexarCosto" style="display:none;">
+                                            <label class="switch">
                                                 <input type="checkbox" name="indexar_costo_receta" id="fIndexarCosto" value="1">
-                                                <span class="slider"></span> Usar costo de la receta
+                                                <span class="slider"></span>
                                             </label>
+                                            <span class="sw-name">Usar costo de la receta</span>
+                                        </div>
                                         </div>
                                         <div class="field-2col">
                                             <div class="field">
