@@ -51,7 +51,7 @@
 
 <!-- Modal Producto -->
 <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content modal-surface">
             <form id="formProducto" class="ajax-form" method="POST" action="{{ route('catalogo.productos.store') }}">
                 @csrf
@@ -143,7 +143,7 @@
                                     </div>
                                     <div class="field">
                                         <label class="switch">
-                                            <input type="checkbox" name="activo" id="fActivo" checked>
+                                            <input type="checkbox" name="activo" id="fActivo" value="1" checked>
                                             <span class="slider"></span> Activo / Visible y vendible
                                         </label>
                                     </div>

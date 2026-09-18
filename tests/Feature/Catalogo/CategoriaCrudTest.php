@@ -52,6 +52,17 @@ class CategoriaCrudTest extends TestCase
         $this->assertDatabaseHas('categorias', ['nombre' => 'Postres']);
     }
 
+    public function test_crear_categoria_checkbox_web(): void
+    {
+        $response = $this->actingAs($this->user)->post('/catalogo/categorias', [
+            'nombre' => 'Postres',
+            'activa' => '1',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('categorias', ['nombre' => 'Postres', 'activa' => true]);
+    }
+
     public function test_editar_categoria(): void
     {
         $categoria = Categoria::create(['nombre' => 'Bebidas', 'activa' => true]);

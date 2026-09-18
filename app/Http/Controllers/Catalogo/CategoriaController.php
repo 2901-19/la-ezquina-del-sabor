@@ -36,7 +36,12 @@ class CategoriaController extends Controller
 
     public function store(StoreCategoriaRequest $request)
     {
-        Categoria::create($request->validated());
+        $categoria = [
+            'nombre' => $request->nombre,
+            'activa' => $request->boolean('activa', true),
+        ];
+
+        Categoria::create($categoria);
 
         return response()->json(['success' => true, 'message' => 'Categoría creada exitosamente.']);
     }
@@ -48,7 +53,10 @@ class CategoriaController extends Controller
 
     public function update(UpdateCategoriaRequest $request, Categoria $categoria)
     {
-        $categoria->update($request->validated());
+        $categoria->update([
+            'nombre' => $request->nombre,
+            'activa' => $request->boolean('activa'),
+        ]);
 
         return response()->json(['success' => true, 'message' => 'Categoría actualizada exitosamente.']);
     }
