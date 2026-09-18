@@ -81,14 +81,6 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="field">
-                                        <label class="label">Imagen</label>
-                                        <input type="text" name="imagen" id="fImagen" class="input-brand" placeholder="URL de imagen">
-                                    </div>
-                                    <div class="field">
-                                        <label class="label">Descripción</label>
-                                        <textarea name="descripcion" id="fDesc" class="textarea-brand" rows="2" placeholder="Breve descripción visible en el menú…"></textarea>
-                                    </div>
                                 </div>
                             </div>
                             <div class="panel">
@@ -106,7 +98,7 @@
                                                 <label class="label">Costo (USD)</label>
                                                 <div class="input-money">
                                                     <span class="pre">$</span>
-                                                    <input type="number" name="costo" id="fCosto" class="input-brand padx" step="0.01" min="0" value="0">
+                                                    <input type="number" name="costo_usd" id="fCosto" class="input-brand padx" step="0.01" min="0" value="0">
                                                 </div>
                                             </div>
                                             <div class="field">
@@ -175,16 +167,73 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Ver Producto -->
+<div class="modal fade" id="modalVerProducto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content modal-surface">
+            <div class="modal-header modal-header-brand">
+                <h5 class="modal-title" id="verProductoTitle">Detalle de producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="verProductoBody"></div>
+            <div class="modal-footer modal-footer-brand">
+                <button type="button" class="btn-cancel" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @push('scripts')
 <script>
+window.cargarDetalleProducto = function(record) {
+    if (!record.tipo_precio) return;
+    setTipoPrecio(record.tipo_precio);
+    var costo = document.getElementById('fCosto');
+    var margen = document.getElementById('fMargen');
+    if (costo && margen) {
+        costo.dispatchEvent(new Event('input'));
+        margen.dispatchEvent(new Event('input'));
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaProductos', '{{ route("catalogo.productos.data") }}', [
         {data:'nombre',name:'nombre'},{data:'categoria.nombre',name:'categoria_id'},
         {data:'tipo_precio',name:'tipo_precio'},{data:'precio_usd',name:'precio_usd'},
-        {data:'precio_bs',name:'precio_bs'},{data:'activo',name:'activo'},
+        {data:'precio_bs',name:'precio_bs',orderable:false},{data:'activo',name:'activo'},
         {data:'acciones',name:'acciones',orderable:false,searchable:false}
     ], { '#filtroCat': 1, '#filtroEstado': 5 });
+
+    document.addEventListener('click', function(e) {
+        var verBtn = e.target.closest('[data-act="ver-producto"]');
+        if (!verBtn) return;
+        e.preventDefault();
+        fetch(verBtn.getAttribute('data-url'), { credentials:'same-origin', headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'} })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+            if (!res.success || !res.data) { showToast('Error al cargar el producto', 'error'); return; }
+            var p = res.data;
+            var tipo = p.tipo_precio === 'margen' ? 'Por margen' : 'Definido';
+            var costo = (p.tipo_precio === 'margen' && p.costo_usd) ? '$ '+Number(p.costo_usd).toFixed(2) : '—';
+            var receta = (p.receta && p.receta.nombre) ? p.receta.nombre : 'Sin receta vinculada';
+            var activo = p.activo ? '<span class="badge-mov badge-entrada">Activo</span>' : '<span class="badge-mov badge-merma">Inactivo</span>';
+            var html = '<div class="row g-3">';
+            html += '<div class="col-md-12"><div class="text-muted" style="font-size:12px">Nombre</div><div class="fw-bold fs-5">'+(p.nombre || '—')+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Categoría</div><div class="fw-bold">'+(p.categoria ? p.categoria.nombre : '—')+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Receta vinculada</div><div class="fw-bold">'+receta+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Tipo de precio</div><div class="fw-bold">'+tipo+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Estado</div><div>'+activo+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Costo (USD)</div><div class="fw-bold font-monospace">'+costo+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Precio USD</div><div class="fw-bold font-monospace">$ '+Number(p.precio_usd).toFixed(2)+'</div></div>';
+            html += '<div class="col-md-12"><div class="text-muted" style="font-size:12px">Precio Bs</div><div class="fw-bold font-monospace">Bs '+Number(p.precio_bs || 0).toLocaleString('es-VE', {minimumFractionDigits:2})+'</div></div>';
+            html += '</div>';
+            document.getElementById('verProductoTitle').textContent = 'Detalle de producto';
+            document.getElementById('verProductoBody').innerHTML = html;
+            openModal('modalVerProducto');
+        })
+        .catch(function() { showToast('Error al cargar el producto', 'error'); });
+    });
 });
 </script>
 @endpush
