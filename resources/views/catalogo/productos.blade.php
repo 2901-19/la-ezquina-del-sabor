@@ -151,10 +151,13 @@
                                         </select>
                                     </div>
                                     <div class="field">
-                                        <label class="switch">
-                                            <input type="checkbox" name="activo" id="fActivo" value="1" checked>
-                                            <span class="slider"></span> Activo / Visible y vendible
-                                        </label>
+                                        <div class="switch-row">
+                                            <label class="switch">
+                                                <input type="checkbox" name="activo" id="fActivo" value="1" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="sw-name">Activo / visible y vendible</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
