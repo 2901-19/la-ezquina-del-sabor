@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initDataTable('tablaProductos', '{{ route("catalogo.productos.data") }}', [
         {data:'nombre',name:'nombre'},{data:'categoria.nombre',name:'categoria_id'},
         {data:'tipo_precio',name:'tipo_precio'},{data:'precio_usd',name:'precio_usd'},
-        {data:'precio_bs',name:'precio_bs',orderable:false},{data:'activo',name:'activo'},
+        {data:'precio_bs',name:'precio_bs',orderable:false,searchable:false},{data:'activo',name:'activo',searchable:false},
         {data:'acciones',name:'acciones',orderable:false,searchable:false}
     ], { '#filtroCat': 1, '#filtroEstado': 5 });
 

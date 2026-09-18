@@ -259,4 +259,33 @@ class ProductoCrudTest extends TestCase
             ->assertJsonFragment(['nombre' => 'Perro Caliente'])
             ->assertJsonMissing(['nombre' => 'Hamburguesa']);
     }
+
+    public function test_data_busqueda_global_filtra_por_nombre(): void
+    {
+        $bebidas = Categoria::create(['nombre' => 'Bebidas', 'activa' => true]);
+        $comidas = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        Producto::create(['categoria_id' => $bebidas->id, 'nombre' => 'Jugo Natural', 'tipo_precio' => 'definido', 'precio_usd' => 2.00, 'es_combo' => false, 'activo' => true]);
+        Producto::create(['categoria_id' => $comidas->id, 'nombre' => 'Hamburguesa', 'tipo_precio' => 'definido', 'precio_usd' => 5.00, 'es_combo' => false, 'activo' => true]);
+
+        $col = function (int $i, string $name, string $searchable) {
+            return "columns[$i][data]=$name&columns[$i][name]=$name&columns[$i][searchable]=$searchable&columns[$i][orderable]=true&columns[$i][search][value]=&columns[$i][search][regex]=false";
+        };
+
+        $params = 'search[value]=Hamburguesa&search[regex]=false&'.implode('&', [
+            $col(0, 'nombre', 'true'),
+            $col(1, 'categoria_id', 'true'),
+            $col(2, 'tipo_precio', 'true'),
+            $col(3, 'precio_usd', 'true'),
+            $col(4, 'precio_bs', 'false'),
+            $col(5, 'activo', 'false'),
+            $col(6, 'acciones', 'false'),
+        ]);
+
+        $response = $this->actingAs($this->user)->getJson('/catalogo/productos/data?'.$params);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('recordsFiltered', 1)
+            ->assertJsonFragment(['nombre' => 'Hamburguesa'])
+            ->assertJsonMissing(['nombre' => 'Jugo Natural']);
+    }
 }
