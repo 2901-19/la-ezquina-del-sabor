@@ -93,6 +93,12 @@
                                         </div>
                                     </div>
                                     <div id="bloqueMargen">
+                                        <div class="field">
+                                            <label class="switch" id="wrapIndexarCosto" style="display:none;">
+                                                <input type="checkbox" name="indexar_costo_receta" id="fIndexarCosto" value="1">
+                                                <span class="slider"></span> Usar costo de la receta
+                                            </label>
+                                        </div>
                                         <div class="field-2col">
                                             <div class="field">
                                                 <label class="label">Costo (USD)</label>
@@ -137,7 +143,7 @@
                                         <select name="receta_id" id="fReceta" class="select-brand">
                                             <option value="">Sin receta vinculada</option>
                                             @foreach($recetas as $r)
-                                            <option value="{{ $r->id }}">{{ $r->nombre }}</option>
+                                            <option value="{{ $r->id }}" data-costo="{{ $r->costo_total_usd }}">{{ $r->nombre }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -189,15 +195,66 @@
 window.cargarDetalleProducto = function(record) {
     if (!record.tipo_precio) return;
     setTipoPrecio(record.tipo_precio);
+    var chk = document.getElementById('fIndexarCosto');
+    if (chk) {
+        chk.setAttribute('data-manual', '1');
+    }
     var costo = document.getElementById('fCosto');
     var margen = document.getElementById('fMargen');
     if (costo && margen) {
         costo.dispatchEvent(new Event('input'));
         margen.dispatchEvent(new Event('input'));
     }
+    actualizarVinculoReceta();
 };
 
+function actualizarVinculoReceta() {
+    var select = document.getElementById('fReceta');
+    var wrap = document.getElementById('wrapIndexarCosto');
+    var chk = document.getElementById('fIndexarCosto');
+    if (!select || !wrap || !chk) return;
+
+    var tipo = document.getElementById('fTipoPrecio');
+    var conReceta = !!select.value && (tipo ? tipo.value === 'margen' : true);
+    wrap.style.display = conReceta ? 'block' : 'none';
+
+    if (!conReceta) {
+        chk.checked = false;
+        setCostoReceta(false);
+        return;
+    }
+
+    if (!chk.hasAttribute('data-manual')) {
+        chk.checked = true;
+    }
+    setCostoReceta(chk.checked);
+}
+
+function setCostoReceta(usarReceta) {
+    var select = document.getElementById('fReceta');
+    var chk = document.getElementById('fIndexarCosto');
+    var costo = document.getElementById('fCosto');
+    if (!select || !chk || !costo) return;
+    costo.disabled = usarReceta;
+    if (usarReceta) {
+        var opcion = select.options[select.selectedIndex];
+        var valor = opcion ? parseFloat(opcion.getAttribute('data-costo')) || 0 : 0;
+        costo.value = valor.toFixed(2);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    var select = document.getElementById('fReceta');
+    var chk = document.getElementById('fIndexarCosto');
+    if (select) select.addEventListener('change', function() {
+        chk.removeAttribute('data-manual');
+        actualizarVinculoReceta();
+    });
+    if (chk) chk.addEventListener('change', function() {
+        chk.setAttribute('data-manual', '1');
+        setCostoReceta(chk.checked);
+    });
+
     initDataTable('tablaProductos', '{{ route("catalogo.productos.data") }}', [
         {data:'nombre',name:'nombre'},{data:'categoria.nombre',name:'categoria_id'},
         {data:'tipo_precio',name:'tipo_precio'},{data:'precio_usd',name:'precio_usd'},
@@ -216,6 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var p = res.data;
             var tipo = p.tipo_precio === 'margen' ? 'Por margen' : 'Definido';
             var costo = (p.tipo_precio === 'margen' && p.costo_usd) ? '$ '+Number(p.costo_usd).toFixed(2) : '—';
+            var costoLabel = (p.tipo_precio === 'margen' && p.indexar_costo_receta) ? 'Costo (de receta)' : 'Costo (USD)';
             var receta = (p.receta && p.receta.nombre) ? p.receta.nombre : 'Sin receta vinculada';
             var activo = p.activo ? '<span class="badge-mov badge-entrada">Activo</span>' : '<span class="badge-mov badge-merma">Inactivo</span>';
             var html = '<div class="row g-3">';
@@ -224,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Receta vinculada</div><div class="fw-bold">'+receta+'</div></div>';
             html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Tipo de precio</div><div class="fw-bold">'+tipo+'</div></div>';
             html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Estado</div><div>'+activo+'</div></div>';
-            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Costo (USD)</div><div class="fw-bold font-monospace">'+costo+'</div></div>';
+            html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">'+costoLabel+'</div><div class="fw-bold font-monospace">'+costo+'</div></div>';
             html += '<div class="col-md-6"><div class="text-muted" style="font-size:12px">Precio USD</div><div class="fw-bold font-monospace">$ '+Number(p.precio_usd).toFixed(2)+'</div></div>';
             html += '<div class="col-md-12"><div class="text-muted" style="font-size:12px">Precio Bs</div><div class="fw-bold font-monospace">Bs '+Number(p.precio_bs || 0).toLocaleString('es-VE', {minimumFractionDigits:2})+'</div></div>';
             html += '</div>';
