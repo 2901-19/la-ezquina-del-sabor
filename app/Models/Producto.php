@@ -9,9 +9,9 @@ class Producto extends Model
 {
     protected $table = 'productos';
 
-    protected $fillable = ['categoria_id', 'receta_id', 'nombre', 'tipo_precio', 'costo_usd', 'margen_ganancia', 'precio_usd', 'es_combo', 'activo'];
+    protected $fillable = ['categoria_id', 'receta_id', 'indexar_costo_receta', 'nombre', 'tipo_precio', 'costo_usd', 'margen_ganancia', 'precio_usd', 'es_combo', 'activo'];
 
-    protected $casts = ['activo' => 'boolean', 'es_combo' => 'boolean', 'costo_usd' => 'decimal:2'];
+    protected $casts = ['activo' => 'boolean', 'es_combo' => 'boolean', 'indexar_costo_receta' => 'boolean', 'costo_usd' => 'decimal:2'];
 
     public function categoria()
     {
