@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
         $totalClientes = Cliente::count();
 
-        $tasaBcv = Configuracion::obtener('tasa_bcv', '42.50');
+        $tasaBcv = Configuracion::obtener('tasa_bcv', '818.00');
 
         return view('dashboard', compact('ventasHoy', 'pedidosHoy', 'comandasActivas', 'totalClientes', 'tasaBcv'));
     }

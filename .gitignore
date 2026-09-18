@@ -18,6 +18,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.opencode
 .prettierrc
 Thumbs.db
 ehthumbs.db

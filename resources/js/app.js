@@ -7,8 +7,19 @@ window.jQuery = jQuery;
 window.$ = jQuery;
 window.Swal = Swal;
 
-var TASA_BCV = 42.50;
+var TASA_BCV = 818.00;
 window.TASA_BCV = TASA_BCV;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var tasaEl = document.getElementById('tasaBcv');
+    if (tasaEl) {
+        var tasa = parseFloat(tasaEl.textContent);
+        if (!isNaN(tasa) && tasa > 0) {
+            TASA_BCV = tasa;
+            window.TASA_BCV = tasa;
+        }
+    }
+});
 
 function showToast(msg, tipo) {
     var map = {success:'success', error:'error', info:'info'};
@@ -291,12 +302,9 @@ document.addEventListener('DOMContentLoaded', function() {
         var btn = e.target.closest('[data-act="borrar"]');
         if (btn) {
             e.preventDefault();
-            var id = btn.getAttribute('data-id');
-            var token = document.querySelector('meta[name="csrf-token"]');
-            var csrf = token ? token.getAttribute('content') : '';
-            var baseUrl = btn.closest('.ajax-form') ? btn.closest('.ajax-form').getAttribute('action') : '';
-            if (baseUrl && id) {
-                confirmarBorrar(baseUrl + '/' + id);
+            var deleteUrl = btn.getAttribute('data-url');
+            if (deleteUrl) {
+                confirmarBorrar(deleteUrl);
             }
             return;
         }
@@ -305,7 +313,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (editBtn) {
             e.preventDefault();
             var editId = editBtn.getAttribute('data-id');
-            var editForm = editBtn.closest('.table-panel') ? editBtn.closest('.table-panel').nextElementSibling : null;
+            var tablePanel = editBtn.closest('.table-panel');
+            var editForm = null;
+            if (tablePanel && tablePanel.nextElementSibling && tablePanel.nextElementSibling.querySelector('.ajax-form')) {
+                editForm = tablePanel.nextElementSibling.querySelector('.ajax-form');
+            }
             if (!editForm) {
                 var allForms = document.querySelectorAll('.ajax-form');
                 for (var i = 0; i < allForms.length; i++) {
@@ -343,6 +355,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 var title = editForm.querySelector('.modal-title');
                 if (title) title.textContent = 'Editar';
+
+                if (typeof window.cargarDetalleReceta === 'function') {
+                    window.cargarDetalleReceta(record);
+                }
 
                 var modal = editForm.closest('.modal');
                 if (modal) openModal(modal.id);
