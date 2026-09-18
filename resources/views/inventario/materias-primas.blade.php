@@ -28,14 +28,14 @@
 </div>
 @endif
 
-<ul class="nav nav-tabs" id="tabsInventario" role="tablist">
-    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabMaterias" type="button"><i class="bi bi-box-seam"></i> Materias primas</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabCompras" type="button"><i class="bi bi-cart-plus"></i> Compras</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMermas" type="button"><i class="bi bi-exclamation-triangle"></i> Mermas</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMovimientos" type="button"><i class="bi bi-clock-history"></i> Movimientos</button></li>
+<ul class="browser-tabs" id="tabsInventario" role="tablist">
+    <li class="browser-tab"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabMaterias" type="button"><i class="bi bi-box-seam"></i> Materias primas</button></li>
+    <li class="browser-tab"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabCompras" type="button"><i class="bi bi-cart-plus"></i> Compras</button></li>
+    <li class="browser-tab"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMermas" type="button"><i class="bi bi-exclamation-triangle"></i> Mermas</button></li>
+    <li class="browser-tab"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabMovimientos" type="button"><i class="bi bi-clock-history"></i> Movimientos</button></li>
 </ul>
 
-<div class="tab-content" style="margin-top:12px;">
+<div class="tab-content" style="margin-top:2px;">
     <!-- Materias primas -->
     <div class="tab-pane fade show active" id="tabMaterias" role="tabpanel">
         <div class="filter-card">
