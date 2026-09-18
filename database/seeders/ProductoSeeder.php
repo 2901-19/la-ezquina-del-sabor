@@ -28,6 +28,7 @@ class ProductoSeeder extends Seeder
             if ($p['tipo_precio'] === 'margen') {
                 $receta = Receta::find($p['receta_id']);
                 $costo = $receta->costo_total_usd;
+                $p['costo_usd'] = $costo;
                 $p['precio_usd'] = round($costo + ($costo * $p['margen_ganancia'] / 100), 2);
             }
             Producto::create($p);
