@@ -18,6 +18,7 @@ class UpdateProductoRequest extends FormRequest
             'nombre' => ['required', 'string', 'max:255', Rule::unique('productos', 'nombre')->ignore($this->producto)],
             'categoria_id' => 'required|integer|exists:categorias,id',
             'receta_id' => 'nullable|integer|exists:recetas,id',
+            'indexar_costo_receta' => 'boolean',
             'tipo_precio' => 'required|in:margen,definido',
             'costo_usd' => 'required_if:tipo_precio,margen|nullable|numeric|min:0',
             'margen_ganancia' => 'required_if:tipo_precio,margen|nullable|numeric|min:0|max:200',

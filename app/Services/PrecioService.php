@@ -19,7 +19,7 @@ class PrecioService
     public function getPrecio(Producto $producto, float $tasaBcv): array
     {
         if ($producto->tipo_precio === 'margen') {
-            $precioUsd = $this->calcularPrecioMargen($producto->precio_usd, $producto->margen_ganancia);
+            $precioUsd = $this->calcularPrecioMargen((float) $producto->costo_usd, (float) $producto->margen_ganancia);
         } else {
             $precioUsd = $producto->precio_usd;
         }
