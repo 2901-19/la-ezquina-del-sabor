@@ -332,6 +332,23 @@ a { color: inherit; text-decoration: none; }
 .badge-cat.delivery { background: var(--info-soft); color: var(--info); }
 .badge-cat { font-size: 12px; font-weight: 600; color: var(--fg-2); background: var(--surface-sunken); border-radius: 999px; padding: 3px 10px; display: inline-block; white-space: nowrap; }
 
+/* ── Stock / Movimientos ─────────────────────────────────────── */
+.stock { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.stock.critico { color: var(--danger); font-weight: 700; }
+.stock.bajo { color: var(--warn); font-weight: 600; }
+.stock.optimo { color: var(--success); }
+.stock.entrada { color: var(--success); }
+.stock.merma, .stock.salida { color: var(--danger); }
+
+.badge-mov {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: 999px; padding: 4px 10px;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.badge-entrada { background: var(--success-soft); color: var(--success); }
+.badge-salida { background: var(--info-soft); color: var(--info); }
+.badge-merma { background: var(--danger-soft); color: var(--danger); }
+
 /* ── Fila de producto en tabla ────────────────────────────────── */
 .prod-name { display: flex; align-items: center; gap: 10px; }
 .prod-thumb { width: 34px; height: 34px; flex: 0 0 auto; border-radius: 9px; background: var(--surface-sunken); display: grid; place-items: center; color: var(--muted); font-size: 15px; }

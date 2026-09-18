@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Inventario\CompraController;
 use App\Http\Controllers\Inventario\MateriaPrimaController;
 use App\Http\Controllers\Inventario\MermaController;
+use App\Http\Controllers\Inventario\MovimientoInventarioController;
 use App\Http\Controllers\Jornada\AperturaController;
 use App\Http\Controllers\Jornada\CierreController;
 use App\Http\Controllers\ReporteController;
@@ -59,8 +60,12 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('permiso:ver_inventario')->group(function () {
         Route::get('/inventario/materias-primas', [MateriaPrimaController::class, 'index'])->name('inventario.materias-primas.index');
         Route::get('/inventario/materias-primas/data', [MateriaPrimaController::class, 'data'])->name('inventario.materias-primas.data');
+        Route::get('/inventario/materias-primas/{materias_prima}', [MateriaPrimaController::class, 'show'])->name('inventario.materias-primas.show');
         Route::get('/inventario/compras/data', [CompraController::class, 'data'])->name('inventario.compras.data');
+        Route::get('/inventario/compras/{compra}', [CompraController::class, 'show'])->name('inventario.compras.show');
         Route::get('/inventario/mermas/data', [MermaController::class, 'data'])->name('inventario.mermas.data');
+        Route::get('/inventario/mermas/{movimiento_inventario}', [MermaController::class, 'show'])->name('inventario.mermas.show');
+        Route::get('/inventario/movimientos/data', [MovimientoInventarioController::class, 'data'])->name('inventario.movimientos.data');
     });
 
     Route::middleware('permiso:editar_inventario')->group(function () {
