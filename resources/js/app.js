@@ -360,6 +360,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     window.cargarDetalleReceta(record);
                 }
 
+                if (typeof window.cargarDetalleProducto === 'function') {
+                    window.cargarDetalleProducto(record);
+                }
+
                 var modal = editForm.closest('.modal');
                 if (modal) openModal(modal.id);
             })
