@@ -61,14 +61,17 @@ class ProductoController extends Controller
 
     public function store(StoreProductoRequest $request)
     {
-        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $request->costo_usd, $request->margen_ganancia);
+        $indexar = $request->boolean('indexar_costo_receta');
+        $costo = $this->resolverCosto($request->receta_id, $request->costo_usd, $indexar);
+        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $costo, $request->margen_ganancia);
 
         Producto::create([
             'categoria_id' => $request->categoria_id,
             'receta_id' => $request->receta_id,
+            'indexar_costo_receta' => $indexar,
             'nombre' => $request->nombre,
             'tipo_precio' => $request->tipo_precio,
-            'costo_usd' => $request->tipo_precio === 'margen' ? $request->costo_usd : null,
+            'costo_usd' => $request->tipo_precio === 'margen' ? $costo : null,
             'margen_ganancia' => $request->margen_ganancia,
             'precio_usd' => $precio,
             'es_combo' => $request->boolean('es_combo'),
@@ -90,14 +93,17 @@ class ProductoController extends Controller
 
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $request->costo_usd, $request->margen_ganancia);
+        $indexar = $request->boolean('indexar_costo_receta');
+        $costo = $this->resolverCosto($request->receta_id, $request->costo_usd, $indexar);
+        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $costo, $request->margen_ganancia);
 
         $producto->update([
             'categoria_id' => $request->categoria_id,
             'receta_id' => $request->receta_id,
+            'indexar_costo_receta' => $indexar,
             'nombre' => $request->nombre,
             'tipo_precio' => $request->tipo_precio,
-            'costo_usd' => $request->tipo_precio === 'margen' ? $request->costo_usd : null,
+            'costo_usd' => $request->tipo_precio === 'margen' ? $costo : null,
             'margen_ganancia' => $request->margen_ganancia,
             'precio_usd' => $precio,
             'es_combo' => $request->boolean('es_combo'),
@@ -129,6 +135,19 @@ class ProductoController extends Controller
         $producto->delete();
 
         return response()->json(['success' => true, 'message' => 'Producto eliminado exitosamente.']);
+    }
+
+    private function resolverCosto(?int $recetaId, ?float $costoManual, bool $indexar): ?float
+    {
+        if ($indexar && $recetaId) {
+            $costoReceta = Receta::find($recetaId)?->costo_total_usd;
+
+            if ($costoReceta !== null) {
+                return (float) $costoReceta;
+            }
+        }
+
+        return $costoManual !== null ? (float) $costoManual : null;
     }
 
     private function calcularPrecio(string $tipo, ?float $precioUsd, ?float $costoUsd, ?float $margen): float

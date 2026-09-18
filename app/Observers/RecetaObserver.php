@@ -11,6 +11,7 @@ class RecetaObserver
     {
         if ($receta->isDirty('costo_total_usd')) {
             app(RecetaCostoService::class)->recalcularPorSubReceta($receta->id);
+            app(RecetaCostoService::class)->actualizarProductosDeReceta($receta->id);
         }
     }
 }

@@ -7,11 +7,16 @@ use App\Models\Comanda;
 use App\Models\ComandaDetalle;
 use App\Models\ComboDetalle;
 use App\Models\Jornada;
+use App\Models\MateriaPrima;
 use App\Models\Permiso;
 use App\Models\Producto;
+use App\Models\Receta;
+use App\Models\RecetaDetalle;
 use App\Models\Role;
 use App\Models\Usuario;
+use App\Services\PrecioService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ProductoCrudTest extends TestCase
@@ -258,5 +263,179 @@ class ProductoCrudTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment(['nombre' => 'Perro Caliente'])
             ->assertJsonMissing(['nombre' => 'Hamburguesa']);
+    }
+
+    public function test_data_busqueda_global_filtra_por_nombre(): void
+    {
+        $bebidas = Categoria::create(['nombre' => 'Bebidas', 'activa' => true]);
+        $comidas = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        Producto::create(['categoria_id' => $bebidas->id, 'nombre' => 'Jugo Natural', 'tipo_precio' => 'definido', 'precio_usd' => 2.00, 'es_combo' => false, 'activo' => true]);
+        Producto::create(['categoria_id' => $comidas->id, 'nombre' => 'Hamburguesa', 'tipo_precio' => 'definido', 'precio_usd' => 5.00, 'es_combo' => false, 'activo' => true]);
+
+        $col = function (int $i, string $name, string $searchable) {
+            return "columns[$i][data]=$name&columns[$i][name]=$name&columns[$i][searchable]=$searchable&columns[$i][orderable]=true&columns[$i][search][value]=&columns[$i][search][regex]=false";
+        };
+
+        $params = 'search[value]=Hamburguesa&search[regex]=false&'.implode('&', [
+            $col(0, 'nombre', 'true'),
+            $col(1, 'categoria_id', 'true'),
+            $col(2, 'tipo_precio', 'true'),
+            $col(3, 'precio_usd', 'true'),
+            $col(4, 'precio_bs', 'false'),
+            $col(5, 'activo', 'false'),
+            $col(6, 'acciones', 'false'),
+        ]);
+
+        $response = $this->actingAs($this->user)->getJson('/catalogo/productos/data?'.$params);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('recordsFiltered', 1)
+            ->assertJsonFragment(['nombre' => 'Hamburguesa'])
+            ->assertJsonMissing(['nombre' => 'Jugo Natural']);
+    }
+
+    private function crearRecetaConCosto(float $cantidad, float $costoUnitario): Receta
+    {
+        $materiaPrima = MateriaPrima::create([
+            'nombre' => 'Carne',
+            'unidad_medida' => 'kg',
+            'stock_actual' => 10,
+            'stock_minimo' => 2,
+            'costo_unitario_usd' => $costoUnitario,
+        ]);
+
+        $receta = Receta::create(['nombre' => 'Mixta Esquina', 'descripcion' => null, 'costo_total_usd' => 0]);
+        RecetaDetalle::create([
+            'receta_id' => $receta->id,
+            'materia_prima_id' => $materiaPrima->id,
+            'cantidad_requerida' => $cantidad,
+        ]);
+        $receta->recalcularCosto();
+
+        return $receta;
+    }
+
+    public function test_crear_producto_toggle_usa_costo_de_receta(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $receta = $this->crearRecetaConCosto(2, 2.00);
+
+        $response = $this->actingAs($this->user)->postJson('/catalogo/productos', [
+            'categoria_id' => $categoria->id,
+            'receta_id' => $receta->id,
+            'indexar_costo_receta' => '1',
+            'nombre' => 'Hamburguesa',
+            'tipo_precio' => 'margen',
+            'costo_usd' => 99.00,
+            'margen_ganancia' => 35,
+            'es_combo' => false,
+            'activo' => true,
+        ]);
+
+        $response->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('productos', ['id' => Producto::where('nombre', 'Hamburguesa')->value('id'), 'costo_usd' => 4.00, 'indexar_costo_receta' => true, 'precio_usd' => 5.40]);
+    }
+
+    public function test_crear_producto_toggle_off_usa_costo_manual(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $receta = $this->crearRecetaConCosto(2, 2.00);
+
+        $response = $this->actingAs($this->user)->postJson('/catalogo/productos', [
+            'categoria_id' => $categoria->id,
+            'receta_id' => $receta->id,
+            'indexar_costo_receta' => '0',
+            'nombre' => 'Hamburguesa',
+            'tipo_precio' => 'margen',
+            'costo_usd' => 3.50,
+            'margen_ganancia' => 35,
+            'es_combo' => false,
+            'activo' => true,
+        ]);
+
+        $response->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('productos', ['id' => Producto::where('nombre', 'Hamburguesa')->value('id'), 'costo_usd' => 3.50, 'indexar_costo_receta' => false, 'precio_usd' => 4.73]);
+    }
+
+    public function test_cambiar_cantidad_receta_actualiza_costo_y_precio_producto(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $receta = $this->crearRecetaConCosto(2, 2.00);
+        $producto = Producto::create([
+            'categoria_id' => $categoria->id,
+            'receta_id' => $receta->id,
+            'indexar_costo_receta' => true,
+            'nombre' => 'Hamburguesa',
+            'tipo_precio' => 'margen',
+            'costo_usd' => 4.00,
+            'margen_ganancia' => 35,
+            'precio_usd' => 5.40,
+            'es_combo' => false,
+            'activo' => true,
+        ]);
+
+        $detalle = $receta->recetaDetalles()->first();
+        $this->actingAs($this->user)->putJson('/catalogo/recetas/'.$receta->id, [
+            'nombre' => $receta->nombre,
+            'descripcion' => null,
+            'detalles' => [
+                ['id' => $detalle->id, 'materia_prima_id' => $detalle->materia_prima_id, 'cantidad_requerida' => 3],
+            ],
+        ])->assertStatus(200);
+
+        $this->assertEquals(6.00, (float) $receta->fresh()->costo_total_usd);
+        $this->assertDatabaseHas('productos', ['id' => $producto->id, 'costo_usd' => 6.00, 'precio_usd' => 8.10]);
+    }
+
+    public function test_cambiar_costo_materia_prima_actualiza_receta_y_producto(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $materiaPrima = MateriaPrima::create(['nombre' => 'Carne', 'unidad_medida' => 'kg', 'stock_actual' => 10, 'stock_minimo' => 2, 'costo_unitario_usd' => 2.00]);
+        $receta = Receta::create(['nombre' => 'Mixta Esquina', 'descripcion' => null, 'costo_total_usd' => 0]);
+        RecetaDetalle::create(['receta_id' => $receta->id, 'materia_prima_id' => $materiaPrima->id, 'cantidad_requerida' => 2]);
+        $receta->recalcularCosto();
+        $producto = Producto::create([
+            'categoria_id' => $categoria->id,
+            'receta_id' => $receta->id,
+            'indexar_costo_receta' => true,
+            'nombre' => 'Hamburguesa',
+            'tipo_precio' => 'margen',
+            'costo_usd' => 4.00,
+            'margen_ganancia' => 35,
+            'precio_usd' => 5.40,
+            'es_combo' => false,
+            'activo' => true,
+        ]);
+
+        $materiaPrima->update(['costo_unitario_usd' => 3.00]);
+
+        $this->assertEquals(6.00, (float) $receta->fresh()->costo_total_usd);
+        $this->assertDatabaseHas('productos', ['id' => $producto->id, 'costo_usd' => 6.00, 'precio_usd' => 8.10]);
+    }
+
+    public function test_backfill_indexa_productos_con_receta(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $receta = $this->crearRecetaConCosto(1, 1.00);
+        $conReceta = Producto::create(['categoria_id' => $categoria->id, 'receta_id' => $receta->id, 'nombre' => 'Hamburguesa', 'tipo_precio' => 'margen', 'costo_usd' => 1.00, 'margen_ganancia' => 35, 'precio_usd' => 1.35, 'es_combo' => false, 'activo' => true]);
+        $sinReceta = Producto::create(['categoria_id' => $categoria->id, 'nombre' => 'Jugo Natural', 'tipo_precio' => 'definido', 'precio_usd' => 2.00, 'es_combo' => false, 'activo' => true]);
+
+        DB::table('productos')
+            ->whereNotNull('receta_id')
+            ->update(['indexar_costo_receta' => true]);
+
+        $this->assertDatabaseHas('productos', ['id' => $conReceta->id, 'indexar_costo_receta' => true]);
+        $this->assertDatabaseHas('productos', ['id' => $sinReceta->id, 'indexar_costo_receta' => false]);
+    }
+
+    public function test_get_precio_margen_no_duplica_margen(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);
+        $producto = Producto::create(['categoria_id' => $categoria->id, 'nombre' => 'Hamburguesa', 'tipo_precio' => 'margen', 'costo_usd' => 4.00, 'margen_ganancia' => 35, 'precio_usd' => 5.40, 'es_combo' => false, 'activo' => true]);
+
+        $resultado = app(PrecioService::class)->getPrecio($producto, 818.00);
+
+        $this->assertEquals(5.40, $resultado['precio_usd']);
+        $this->assertEquals(4417.20, $resultado['precio_bs']);
     }
 }
