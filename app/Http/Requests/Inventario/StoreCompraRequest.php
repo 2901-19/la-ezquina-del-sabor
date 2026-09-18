@@ -17,6 +17,7 @@ class StoreCompraRequest extends FormRequest
             'materia_prima_id' => 'required|exists:materias_primas,id',
             'cantidad' => 'required|numeric|min:0.01',
             'costo_unitario_usd' => 'required|numeric|min:0',
+            'fecha_compra' => 'nullable|date',
             'notas' => 'nullable|string|max:500',
         ];
     }
