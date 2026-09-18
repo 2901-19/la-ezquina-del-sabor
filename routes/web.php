@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware('permiso:editar_catalogo')->group(function () {
         Route::resource('catalogo/productos', ProductoController::class)
-            ->except(['show', 'create', 'edit', 'index'])
+            ->except(['create', 'edit', 'index'])
             ->names('catalogo.productos');
         Route::resource('catalogo/categorias', CategoriaController::class)
             ->except(['show', 'create', 'edit', 'index'])

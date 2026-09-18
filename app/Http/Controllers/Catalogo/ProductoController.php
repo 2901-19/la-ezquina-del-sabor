@@ -10,7 +10,6 @@ use App\Models\Configuracion;
 use App\Models\Producto;
 use App\Models\Receta;
 use App\Services\PrecioService;
-use App\Services\TasaBcvService;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
@@ -44,13 +43,13 @@ class ProductoController extends Controller
             ->addColumn('acciones', function ($producto) {
                 return '
                     <div class="row-actions">
+                        <button class="icon-btn" data-act="ver-producto" data-id="'.$producto->id.'" data-url="'.route('catalogo.productos.show', $producto->id).'" title="Ver">
+                            <i class="bi bi-eye"></i>
+                        </button>
                         <button class="icon-btn" data-act="editar" data-id="'.$producto->id.'" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <button class="icon-btn" data-act="ver" data-id="'.$producto->id.'" title="Ver">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="icon-btn del" data-act="borrar" data-id="'.$producto->id.'" title="Eliminar">
+                        <button class="icon-btn del" data-act="borrar" data-id="'.$producto->id.'" data-url="'.route('catalogo.productos.destroy', $producto->id).'" title="Eliminar">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -62,19 +61,16 @@ class ProductoController extends Controller
 
     public function store(StoreProductoRequest $request)
     {
-        $tasaBcv = app(TasaBcvService::class)->getTasaActual();
-        $precio = app(PrecioService::class)->getPrecio(
-            (object) ['tipo_precio' => $request->tipo_precio, 'precio_usd' => $request->precio_usd, 'margen_ganancia' => $request->margen_ganancia],
-            $tasaBcv
-        );
+        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $request->costo_usd, $request->margen_ganancia);
 
         Producto::create([
             'categoria_id' => $request->categoria_id,
             'receta_id' => $request->receta_id,
             'nombre' => $request->nombre,
             'tipo_precio' => $request->tipo_precio,
+            'costo_usd' => $request->tipo_precio === 'margen' ? $request->costo_usd : null,
             'margen_ganancia' => $request->margen_ganancia,
-            'precio_usd' => $request->precio_usd,
+            'precio_usd' => $precio,
             'es_combo' => $request->boolean('es_combo'),
             'activo' => $request->boolean('activo', true),
         ]);
@@ -84,18 +80,26 @@ class ProductoController extends Controller
 
     public function show(Producto $producto)
     {
+        $producto->load('categoria', 'receta');
+
+        $tasaBcv = (float) Configuracion::obtener('tasa_bcv', 818);
+        $producto->precio_bs = round($producto->precio_usd * $tasaBcv, 2);
+
         return response()->json(['success' => true, 'data' => $producto]);
     }
 
     public function update(UpdateProductoRequest $request, Producto $producto)
     {
+        $precio = $this->calcularPrecio($request->tipo_precio, $request->precio_usd, $request->costo_usd, $request->margen_ganancia);
+
         $producto->update([
             'categoria_id' => $request->categoria_id,
             'receta_id' => $request->receta_id,
             'nombre' => $request->nombre,
             'tipo_precio' => $request->tipo_precio,
+            'costo_usd' => $request->tipo_precio === 'margen' ? $request->costo_usd : null,
             'margen_ganancia' => $request->margen_ganancia,
-            'precio_usd' => $request->precio_usd,
+            'precio_usd' => $precio,
             'es_combo' => $request->boolean('es_combo'),
             'activo' => $request->boolean('activo'),
         ]);
@@ -105,8 +109,34 @@ class ProductoController extends Controller
 
     public function destroy(Producto $producto)
     {
+        $referencias = [];
+
+        if ($producto->comandaDetalles()->exists()) {
+            $referencias[] = 'comandas';
+        }
+
+        if ($producto->comboComponentes()->exists()) {
+            $referencias[] = 'combos';
+        }
+
+        if (! empty($referencias)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se puede eliminar el producto porque está vinculado a '.implode(' y ', $referencias).'.',
+            ], 409);
+        }
+
         $producto->delete();
 
         return response()->json(['success' => true, 'message' => 'Producto eliminado exitosamente.']);
+    }
+
+    private function calcularPrecio(string $tipo, ?float $precioUsd, ?float $costoUsd, ?float $margen): float
+    {
+        if ($tipo === 'margen') {
+            return app(PrecioService::class)->calcularPrecioMargen((float) $costoUsd, (float) $margen);
+        }
+
+        return (float) $precioUsd;
     }
 }
