@@ -83,6 +83,39 @@ class ProductoCrudTest extends TestCase
         $this->assertDatabaseHas('productos', ['nombre' => 'Refresco 500ml', 'costo_usd' => null, 'margen_ganancia' => null, 'precio_usd' => 1.25]);
     }
 
+    public function test_crear_producto_activo_checkbox_web(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Bebidas', 'activa' => true]);
+
+        $response = $this->actingAs($this->user)->postJson('/catalogo/productos', [
+            'categoria_id' => $categoria->id,
+            'nombre' => 'Jugo de Naranja',
+            'tipo_precio' => 'definido',
+            'precio_usd' => 2.00,
+            'es_combo' => false,
+            'activo' => '1',
+        ]);
+
+        $response->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('productos', ['nombre' => 'Jugo de Naranja', 'activo' => true]);
+    }
+
+    public function test_crear_producto_sin_checkbox_activo(): void
+    {
+        $categoria = Categoria::create(['nombre' => 'Bebidas', 'activa' => true]);
+
+        $response = $this->actingAs($this->user)->postJson('/catalogo/productos', [
+            'categoria_id' => $categoria->id,
+            'nombre' => 'Jugo de Mora',
+            'tipo_precio' => 'definido',
+            'precio_usd' => 2.20,
+            'es_combo' => false,
+        ]);
+
+        $response->assertStatus(200)->assertJson(['success' => true]);
+        $this->assertDatabaseHas('productos', ['nombre' => 'Jugo de Mora', 'activo' => true]);
+    }
+
     public function test_validar_nombre_duplicado(): void
     {
         $categoria = Categoria::create(['nombre' => 'Comidas', 'activa' => true]);

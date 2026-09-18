@@ -48,7 +48,7 @@
                     </div>
                     <div class="field">
                         <label class="switch">
-                            <input type="checkbox" name="activa" checked>
+                            <input type="checkbox" name="activa" value="1" checked>
                             <span class="slider"></span> Categoría activa
                         </label>
                     </div>
