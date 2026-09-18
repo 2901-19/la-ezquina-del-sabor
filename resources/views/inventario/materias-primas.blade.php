@@ -470,7 +470,7 @@ document.addEventListener('click', function(e) {
             tbody.innerHTML = rows;
         })
         .catch(function() { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Error al cargar movimientos.</td></tr>'; });
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalMovimientos')).show();
+        openModal('modalMovimientos');
         return;
     }
 
@@ -493,6 +493,7 @@ document.addEventListener('click', function(e) {
             html += '<div class="text-end fw-bold" style="font-size:16px;color:var(--accent);">Total: $ '+Number(c.total).toFixed(2)+'</div>';
             document.getElementById('verCompraTitle').textContent = 'Compra #'+c.id;
             document.getElementById('verCompraBody').innerHTML = html;
+            openModal('modalVerCompra');
         })
         .catch(function() { showToast('Error al cargar compra', 'error'); });
         return;
@@ -516,6 +517,7 @@ document.addEventListener('click', function(e) {
             html += '</div>';
             document.getElementById('verMermaTitle').textContent = 'Detalle de merma';
             document.getElementById('verMermaBody').innerHTML = html;
+            openModal('modalVerMerma');
         })
         .catch(function() { showToast('Error al cargar merma', 'error'); });
         return;
